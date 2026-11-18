@@ -1,0 +1,1 @@
+// Representa eventos, séries, datas, cidades e status.

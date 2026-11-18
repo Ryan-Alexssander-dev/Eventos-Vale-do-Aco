@@ -1,1 +1,0 @@
-"""Pacote das entidades persistentes da aplicação."""

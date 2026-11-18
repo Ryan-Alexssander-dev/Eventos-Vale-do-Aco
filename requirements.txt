@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-mysql-connector-python
-pydantic
-jinja2
-python-dotenv
-# Dependências Python da API, servidor, banco, templates e configuração.

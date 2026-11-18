@@ -1,0 +1,1 @@
+// Validação das entradas e respostas relacionadas a eventos.

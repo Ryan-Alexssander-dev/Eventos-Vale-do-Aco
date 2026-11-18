@@ -1,0 +1,1 @@
+// Representa frequentadores, organizadores e administradores.

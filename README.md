@@ -12,16 +12,15 @@ Centralizar em um único serviço os eventos culturais, esportivos, comerciais, 
 - **Organizadores:** cadastram eventos, séries interligadas e informações completas, acompanham inscrições e cancelam quando permitido.
 - **Administradores:** aprovam eventos menores, mantêm os eventos oficiais da plataforma e administram avisos importantes.
 
-O projeto contempla páginas públicas e áreas autenticadas, comunicação por e-mail, lembretes, , escolha de canais de notificação, status dos eventos e armazenamento seguro das informações. O projeto foi planejado para uma experiência rápida, responsiva e modular.
+O projeto contempla páginas públicas e áreas autenticadas, comunicação por e-mail, lembretes, escolha de canais de notificação, status dos eventos e armazenamento seguro das informações. O projeto foi planejado para uma experiência rápida, responsiva e modular.
 
 ## Tecnologias
 
 - HTML5 para estrutura das páginas.
 - CSS3 e Bootstrap para apresentação responsiva.
-- JavaScript para integração da interface com a API.
-- Python com FastAPI para o servidor e a API.
-- Jinja2 para renderização das páginas.
-- Pydantic para validação de dados.
+- JavaScript para a interface e o servidor.
+- Node.js para executar a aplicação e as rotas HTTP.
+- HTML dinâmico para as páginas da aplicação.
 - MySQL para persistência.
 - SMTP para envio de e-mails.
 
@@ -38,7 +37,6 @@ Eventos-Vale-do-A-o/
 │   └── templates/   # Páginas HTML renderizadas pelo servidor
 ├── index.html       # Protótipo público inicial
 ├── login.html       # Protótipo inicial de autenticação
-├── requirements.txt # Dependências Python
 ├── package.json     # Dependências e metadados do ambiente JavaScript
 └── README.md        # Visão geral e mapa do projeto
 ```
@@ -56,38 +54,37 @@ Eventos-Vale-do-A-o/
 - **`login.html`**: será o protótipo independente da tela de autenticação com campos de e-mail e senha e ações de recuperação e cadastro.
 - **`package.json`**: deve registrar metadados do projeto JavaScript, scripts de desenvolvimento e o Bootstrap usado pela interface.
 - **`package-lock.json`**: registra as versões exatas das dependências JavaScript para permitir instalações reproduzíveis.
-- **`requirements.txt`**: lista as bibliotecas Python necessárias para API, servidor, banco, validação, templates e configuração.
 
 ### Inicialização da aplicação
 
-- **`app/__init__.py`**: marca `app` como um pacote Python e pode conter a inicialização mínima compartilhada.
-- **`app/config.py`**: deve carregar as configurações do ambiente e fornecer acesso seguro a valores como banco, autenticação e SMTP.
-- **`app/database.py`**: deve centralizar a conexão com MySQL, o ciclo de vida da conexão e operações ou sessões compartilhadas.
-- **`app/main.py`**: deve criar a aplicação FastAPI, configurar templates e arquivos estáticos, registrar os roteadores e iniciar os serviços essenciais.
+- **`app/__init__.js`**: reúne as exportações compartilhadas do módulo principal da aplicação.
+- **`app/config.js`**: carrega as configurações do ambiente e fornece acesso seguro a valores como banco, autenticação e SMTP.
+- **`app/database.js`**: centraliza a configuração da conexão MySQL, o ciclo de vida da conexão e as operações compartilhadas.
+- **`app/main.js`**: inicia o servidor Node.js, registra as rotas e disponibiliza a interface estática.
 
 ### Entidades
 
-- **`app/models/__init__.py`**: reúne ou expõe as entidades disponíveis no pacote de modelos.
-- **`app/models/empresa.py`**: representará organizadores ou empresas, incluindo identificação, razão social ou nome, contatos e vínculo com eventos.
-- **`app/models/evento.py`**: representará eventos, séries, datas, horários, local, cidade, capacidade, ingresso, status e relação com organizadores.
-- **`app/models/usuario.py`**: representará contas de frequentadores e administradores, dados pessoais, autenticação e preferências de contato.
+- **`app/models/__init__.js`**: reúne ou expõe as entidades disponíveis no diretório de modelos.
+- **`app/models/empresa.js`**: representará organizadores ou empresas, incluindo identificação, razão social ou nome, contatos e vínculo com eventos.
+- **`app/models/evento.js`**: representará eventos, séries, datas, horários, local, cidade, capacidade, ingresso, status e relação com organizadores.
+- **`app/models/usuario.js`**: representará contas de frequentadores e administradores, dados pessoais, autenticação e preferências de contato.
 
 ### Rotas
 
-- **`app/routers/__init__.py`**: identifica o diretório de rotas como pacote e pode centralizar exportações comuns.
-- **`app/routers/auth_routes.py`**: deve conter cadastro, login, logout, recuperação de credenciais e gerenciamento da sessão ou autenticação.
-- **`app/routers/evento_routes.py`**: deve listar, pesquisar, filtrar, cadastrar, editar, cancelar e detalhar eventos.
-- **`app/routers/painel_routes.py`**: deve atender os painéis de organizadores e administradores, incluindo inscrições, moderação e indicadores.
+- **`app/routers/__init__.js`**: centraliza as exportações dos roteadores HTTP.
+- **`app/routers/auth_routes.js`**: contém cadastro, login, logout, recuperação de credenciais e gerenciamento da sessão ou autenticação.
+- **`app/routers/evento_routes.js`**: lista, pesquisa, filtra, cadastra, edita, cancela e detalha eventos.
+- **`app/routers/painel_routes.js`**: atende os painéis de organizadores e administradores, incluindo inscrições, moderação e indicadores.
 
 ### Schemas
 
-- **`app/schemas/__init__.py`**: identifica o pacote de schemas e pode expor modelos usados por diferentes módulos.
-- **`app/schemas/evento_schema.py`**: deve validar dados recebidos e definir respostas completas ou resumidas de eventos.
-- **`app/schemas/usuario_schema.py`**: deve validar cadastros, autenticação, atualização de perfil e dados de contato dos usuários.
+- **`app/schemas/__init__.js`**: centraliza os contratos de validação usados pela aplicação.
+- **`app/schemas/evento_schema.js`**: valida dados recebidos e define respostas completas ou resumidas de eventos.
+- **`app/schemas/usuario_schema.js`**: valida cadastros, autenticação, atualização de perfil e dados de contato dos usuários.
 
 ### Serviços
 
-- **`app/services/email_service.py`**: centraliza o envio por SMTP de confirmações, alterações de status, lembretes e outros avisos.
+- **`app/services/email_service.js`**: centraliza o envio por SMTP de confirmações, alterações de status, lembretes e outros avisos.
 
 ### Interface estática
 
@@ -108,13 +105,11 @@ Eventos-Vale-do-A-o/
 
 ## Instalação
 
-### Backend Python
+### Backend JavaScript
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
 copy .env.example .env
+npm install
 ```
 
 Preencha o arquivo `.env` com as credenciais locais do MySQL e, quando necessário, com os dados SMTP.
@@ -127,13 +122,13 @@ npm install
 
 ## Execução
 
-Com o ambiente virtual ativo e o banco configurado:
+Com o banco configurado:
 
 ```bash
-uvicorn app.main:app --reload
+node app/main.js
 ```
 
-A documentação interativa da API ficará disponível no endereço exibido pelo FastAPI no terminal, normalmente em `http://127.0.0.1:8000/docs`.
+O servidor ficará disponível no endereço exibido no terminal, normalmente em `http://127.0.0.1:3000`.
 
 ## Diretrizes de contribuição
 
