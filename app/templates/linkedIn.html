@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rede Profissional - Entrar ou Cadastrar-se</title>
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons (opcional para os ícones da barra de navegação) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-dark">
+
+  <!-- Cabeçalho / Barra de Navegação -->
+  <header class="">
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+      <div class="container">
+        
+        <a class="navbar-brand fw-bold fs-3 text-light d-flex align-items-center badge bg-dark text-white ms-1 rounded-1" href="index.html">
+          Eventos | Vale do Aço
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav align-items-lg-center gap-lg-3 my-3 my-lg-0">
+            <li class="nav-item text-center">
+              <a class="nav-link d-flex flex-lg-column align-items-center gap-2 gap-lg-0" href="#">
+                <i class="bi bi-buildings"></i>
+                <small>Eventos</small>
+              </a>
+            </li>
+            <li class="nav-item text-center">
+              <a class="nav-link d-flex flex-lg-column align-items-center gap-2 gap-lg-0" href="#">
+                <i class="bi bi bi-buildings fs-5"></i>
+                <small>Torne-se Organizador</small>
+              </a>
+            </li>
+            
+            <li class="nav-item text-center">
+              <a class="nav-link d-flex flex-lg-column align-items-center gap-2 gap-lg-0" href="#">
+                <i class="bi bi-people fs-5"></i>
+                <small>Sobre nós</small>
+              </a>
+            </li>
+          </ul>
+
+          <!-- Divisor Vertical (Desktop) -->
+          <div class="vr d-none d-lg-block mx-3"></div>
+
+          <!-- Botões de Ação -->
+          <div class="d-flex flex-column flex-lg-row gap-2">
+            <a href="cadastrar.html" class="btn btn-dark fw-semibold px-4 py-2">Entrar</a>
+            <a href="login.html" class="btn btn-outline-light fw-semibold px-4 py-2">Cadastre-se</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Seção Principal (Hero + Login) -->
+  <main>
+    <section class="py-4 py-lg-5">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <!-- Coluna Esquerda: Título e Formulário -->
+          <div class="col-12 col-lg-6">
+            <h1 class="display-5 fw-light text-secondary mb-4">
+              Conheça sua nova comunidade profissional
+            </h1>
+
+            <form class="w-100" style="max-width: 420px;">
+              <div class="mb-3">
+                <label for="emailInput" class="form-label fw-semibold small text-secondary">E-mail ou telefone</label>
+                <input type="text" class="form-control form-control-lg border-dark" id="emailInput" placeholder="Digite seu e-mail ou telefone">
+              </div>
+
+              <div class="mb-3">
+                <label for="senhaInput" class="form-label fw-semibold small text-secondary">Senha</label>
+                <div class="input-group input-group-lg">
+                  <input type="password" class="form-control border-dark border-end-0" id="senhaInput" placeholder="Digite sua senha">
+                  <button class="btn btn-outline-secondary border-dark border-start-0 text-primary fw-semibold fs-6" type="button">Exibir</button>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <a href="#" class="text-decoration-none fw-semibold text-primary">Esqueceu a senha?</a>
+              </div>
+
+              <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold">Entrar</button>
+              </div>
+
+              <div class="d-flex align-items-center my-3">
+                <hr class="flex-grow-1">
+                <span class="px-3 text-muted small">ou</span>
+                <hr class="flex-grow-1">
+              </div>
+
+              <p class="small text-muted mb-3">
+                Ao clicar em Continuar para se cadastrar ou entrar, você aceita o <a href="#" class="text-decoration-none">Contrato do Usuário</a>, a <a href="#" class="text-decoration-none">Política de Privacidade</a> e a <a href="#" class="text-decoration-none">Política de Cookies</a> da plataforma.
+              </p>
+
+              <div class="d-grid gap-2">
+                <button type="button" class="btn btn-outline-dark btn-lg rounded-pill fs-6 fw-semibold">
+                  <i class="bi bi-google me-2"></i>Continuar com o Google
+                </button>
+                <button type="button" class="btn btn-outline-dark btn-lg rounded-pill fs-6 fw-semibold">
+                  Ainda não faz parte? Cadastre-se agora
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Coluna Direita: Imagem Ilustrativa -->
+          <div class="col-12 col-lg-6 text-center">
+            <img src="https://placehold.co/650x520/f3f2ef/495057?text=Ilustracao+Profissional" alt="Ilustração de trabalho e conexão" class="img-fluid rounded-4">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 2: Explore artigos colaborativos -->
+    <section class="bg-light py-5">
+      <div class="container">
+        <div class="row g-4 align-items-start">
+          <div class="col-12 col-lg-5">
+            <h2 class="fw-light display-6 mb-3">Explore artigos colaborativos</h2>
+            <p class="fs-5 text-secondary">
+              Estamos desbloqueando o conhecimento da comunidade de uma maneira totalmente nova. Os especialistas adicionam insights diretamente a cada artigo, começando com a ajuda de inteligência artificial.
+            </p>
+          </div>
+          <div class="col-12 col-lg-7">
+            <div class="d-flex flex-wrap gap-2">
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Marketing</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Administração Pública</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Assistência Médica</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Engenharia</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Serviços de TI</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Sustentabilidade</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Administração de Empresas</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Telecomunicações</a>
+              <a href="#" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold">Exibir tudo</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 3: Encontre o emprego ou estágio certo -->
+    <section class="bg-white py-5">
+      <div class="container">
+        <div class="row g-4 align-items-start">
+          <div class="col-12 col-lg-5">
+            <h2 class="fw-light display-6 mb-3">Encontre o emprego ou estágio certo para você</h2>
+          </div>
+          <div class="col-12 col-lg-7">
+            <p class="text-uppercase fw-semibold text-secondary small mb-3">Pesquisas sugeridas</p>
+            <div class="d-flex flex-wrap gap-2">
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Engenharia</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Desenvolvimento de Negócios</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Finanças</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Assistente Administrativo</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Varejo</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Atendimento ao Cliente</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Operações</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Tecnologia da Informação</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Marketing</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Recursos Humanos</a>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold">
+                Exibir mais <i class="bi bi-chevron-down ms-1"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 4: Anuncie sua vaga -->
+    <section class="bg-warning-subtle py-5">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-lg-5">
+            <h2 class="fw-normal text-danger-emphasis display-6">
+              Anuncie sua vaga para milhões de usuários encontrarem
+            </h2>
+          </div>
+          <div class="col-12 col-lg-7">
+            <a href="#" class="btn btn-outline-primary rounded-pill px-4 py-3 fw-semibold fs-5">
+              Anunciar vaga
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 5: Ferramentas de software -->
+    <section class="bg-white py-5">
+      <div class="container">
+        <div class="row g-4 align-items-start">
+          <div class="col-12 col-lg-5">
+            <h2 class="fw-light display-6 mb-3">Descubra as melhores ferramentas de software</h2>
+            <p class="fs-5 text-secondary">
+              Conecte-se com compradores que têm experiência em primeira mão para encontrar os melhores produtos para você.
+            </p>
+          </div>
+          <div class="col-12 col-lg-7">
+            <p class="text-uppercase fw-semibold text-secondary small mb-3">Ferramentas sugeridas</p>
+            <div class="d-flex flex-wrap gap-2">
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Plataformas de E-Commerce</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Software de CRM</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Sistemas de Recursos Humanos</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Software de Recrutamento</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Inteligência de Vendas</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Software de Gestão de Projetos</a>
+              <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Software de Help Desk</a>
+              <a href="#" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold">Exibir tudo</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 6: Chamada para Conexão e Aprendizado (2 colunas com cards) -->
+    <section class="bg-light py-5">
+      <div class="container">
+        <div class="row g-5">
+          <div class="col-12 col-md-6">
+            <img src="https://placehold.co/320x240/e9ecef/495057?text=Conexoes" alt="Pessoas conversando" class="img-fluid rounded-3 mb-4">
+            <h3 class="fw-light display-6 mb-4">Conecte-se com pessoas que podem ajudar</h3>
+            <a href="#" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-semibold">Encontre pessoas conhecidas</a>
+          </div>
+          <div class="col-12 col-md-6">
+            <img src="https://placehold.co/320x240/e9ecef/495057?text=Aprendizado" alt="Estudando online" class="img-fluid rounded-3 mb-4">
+            <h3 class="fw-light display-6 mb-4">Aprenda as competências de que precisa para ter sucesso</h3>
+            <div class="dropdown">
+              <button class="btn btn-outline-dark dropdown-toggle rounded-2 px-4 py-3 fw-semibold" type="button" data-bs-toggle="dropdown">
+                Escolha um tópico para aprender
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Análise de Dados e Estatística</a></li>
+                <li><a class="dropdown-item" href="#">Desenvolvimento de Software</a></li>
+                <li><a class="dropdown-item" href="#">Gestão de Projetos</a></li>
+                <li><a class="dropdown-item" href="#">Liderança e Gestão</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seção 7: Banner Final de Cadastro -->
+    <section class="bg-primary-subtle py-5">
+      <div class="container py-4">
+        <h2 class="display-5 fw-light mb-4">
+          Entre para a sua comunidade profissional na plataforma
+        </h2>
+        <a href="#" class="btn btn-primary btn-lg rounded-pill px-4 py-2 fw-semibold">Começar</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé -->
+  <footer class="bg-light pt-5 pb-4 border-top">
+    <div class="container">
+      <div class="row g-4 mb-5">
+        <!-- Logo Rodapé -->
+        <div class="col-12 col-lg-3">
+          <a class="navbar-brand fw-bold fs-4 text-primary" href="#">
+            Rede<span class="badge bg-primary text-white ms-1 rounded-1">in</span>
+          </a>
+        </div>
+
+        <!-- Coluna 1 -->
+        <div class="col-6 col-md-3 col-lg-2">
+          <h6 class="fw-bold mb-3">Geral</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2">
+            <li><a href="#" class="text-decoration-none text-secondary">Cadastre-se</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Central de Ajuda</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Sobre</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Imprensa</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Blog</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Carreiras</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Desenvolvedores</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 2 -->
+        <div class="col-6 col-md-3 col-lg-2">
+          <h6 class="fw-bold mb-3">Navegar na Rede</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2">
+            <li><a href="#" class="text-decoration-none text-secondary">Aprendizado</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Vagas</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Jogos</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Salário</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Dispositivos móveis</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Serviços</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3 -->
+        <div class="col-6 col-md-3 col-lg-2">
+          <h6 class="fw-bold mb-3">Soluções Business</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2">
+            <li><a href="#" class="text-decoration-none text-secondary">Talentos</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Marketing</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Vendas</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Aprendizado</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 4 -->
+        <div class="col-6 col-md-3 col-lg-3">
+          <h6 class="fw-bold mb-3">Diretórios</h6>
+          <ul class="list-unstyled small d-flex flex-column gap-2">
+            <li><a href="#" class="text-decoration-none text-secondary">Usuários</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Vagas</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Empresas</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Em destaque</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Publicações</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Artigos</a></li>
+            <li><a href="#" class="text-decoration-none text-secondary">Instituições de ensino</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Barra Legal Inferior -->
+      <div class="d-flex flex-wrap align-items-center gap-3 pt-3 border-top small text-secondary">
+        <span class="fw-bold text-dark">Rede Profissional &copy; 2026</span>
+        <a href="#" class="text-decoration-none text-secondary">Sobre</a>
+        <a href="#" class="text-decoration-none text-secondary">Acessibilidade</a>
+        <a href="#" class="text-decoration-none text-secondary">Contrato do Usuário</a>
+        <a href="#" class="text-decoration-none text-secondary">Política de Privacidade</a>
+        <a href="#" class="text-decoration-none text-secondary">Política de Cookies</a>
+        <a href="#" class="text-decoration-none text-secondary">Política de Direitos Autorais</a>
+        <a href="#" class="text-decoration-none text-secondary">Idioma</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
