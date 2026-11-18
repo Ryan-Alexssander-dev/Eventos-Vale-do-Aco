@@ -1,0 +1,1 @@
+// Representa organizadores e empresas cadastrados na plataforma.

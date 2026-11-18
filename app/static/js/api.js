@@ -1,0 +1,1 @@
+// Integração JavaScript com a API e atualização dinâmica da interface.

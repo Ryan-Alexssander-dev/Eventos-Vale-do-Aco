@@ -1,0 +1,1 @@
+// Validação dos dados de cadastro, perfil e autenticação.
