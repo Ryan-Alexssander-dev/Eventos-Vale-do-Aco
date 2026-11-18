@@ -36,3 +36,4 @@ def send_email(recipient: str, subject: str, body: str) -> None:
         if username:
             smtp.login(username, password)
         smtp.send_message(message)
+"""Serviço centralizado para envio de mensagens por e-mail."""

@@ -10,3 +10,4 @@ load_dotenv(PROJECT_ROOT / ".env")
 
 def get_setting(name: str, default: str = "") -> str:
     return os.getenv(name, default)
+"""Carrega e disponibiliza as configurações do ambiente."""
