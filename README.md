@@ -117,7 +117,7 @@ Preencha o arquivo `.env` com as credenciais locais do MySQL e, quando necessár
 ### Dependências da interface
 
 ```bash
-npm install
+npm install express cors
 ```
 
 ## Execução
