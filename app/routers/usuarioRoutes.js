@@ -1,223 +1,147 @@
-// CRUD de usuários (montado em /api/usuarios) — a ser implementado pela equipe de back-end.
-//
-// O front-end (app/static/js/servicoUsuarios.js) espera, ajustáveis em app/static/js/configuracao.js:
-//   POST   /login                       { email, senha }  -> { usuario, token? }
-//   POST   /                            cria usuário      -> usuario
-//   GET    /?email=...                  busca por e-mail  -> lista ou usuario
-//   GET    /:id        PATCH /:id       lê / atualiza     -> usuario
-//   DELETE /:id                         { senha }
-//   GET|POST /:idUsuario/eventos-salvos  e  DELETE /:idUsuario/eventos-salvos/:idEvento
-// Detalhes em docs/CONTRATO-DA-API.md.
-//
-// Para validar o token devolvido pela verificação de e-mail (campo tokenVerificacao nas rotas de cadastro e
-// de redefinição de senha), use verificarToken() de ../services/codigosVerificacao.js.
+// CRUD de usuários (montado em /api/usuarios).
 
-
+const express = require("express");
+const bcrypt = require("bcrypt");
+const { query } = require("../database");
 
 const router = express.Router();
-module.exports = router;
+const saltRounds = 10;
 
-// Rotas:
-// CADASTRO - POST '/usuarios'
-// LOGIN - POST '/login'
-// VER TODOS - GET '/usuarios'
-// VER POR ID - GET '/usuarios/:id'
-// ATUALIZAR POR ID - PUT '/usuarios/:id'
-// DELETAR POR ID - DELETE '/usuarios/:id'
- 
-// Dependências
-const express = require('express')
-const cors = require('cors')
-const path = require('path')
-const bcrypt = require('bcrypt')
-const db = require('./app/database')
- 
-// Configuração do express
-const app = express()
-app.use(cors())
-app.use(express.json())
-app.use(express.static(path.join(__dirname, 'templates')))
- 
-// Configurção do bcrypt - Saltos
-const salt_rounds = 10
- 
-// Função para campos não preenchidos
-function isEmpty(value){
-    return value === undefined || value === null || String(value).trim() === ''
+function emailValido(email) {
+  return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
- 
-// ===================
-// CRUD Usuários
-// ===================
- 
-// Cadastro - Usuários
-app.post('/usuarios', async(req, res) => {
-    const {nome, email, senha} = req.body
- 
-    if(isEmpty(nome) || isEmpty(email) || isEmpty(senha)){
-        return res.status(400).json({message: 'Todos os campos são obrigatórios!'})
+
+function idValido(valor) {
+  const id = Number(valor);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+router.post("/login", async (req, res, next) => {
+  const { email, senha } = req.body;
+  if (!emailValido(email) || typeof senha !== "string" || senha.length === 0) {
+    return res.status(400).json({ mensagem: "E-mail e senha válidos são obrigatórios." });
+  }
+
+  try {
+    const usuarios = await query(
+      "SELECT id_user, nome, email, senha FROM users WHERE email = ?",
+      [email]
+    );
+    const usuario = usuarios[0];
+    if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+      return res.status(401).json({ mensagem: "E-mail ou senha inválidos." });
     }
- 
-    if(!email.includes('@' && '.')){
-        return res.status(400).json({message: 'Insira um e-mail válido!'})
+
+    return res.json({
+      usuario: { id: usuario.id_user, nome: usuario.nome, email: usuario.email },
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.post("/", async (req, res, next) => {
+  const { nome, email, senha } = req.body;
+  if (typeof nome !== "string" || !nome.trim() || !emailValido(email) ||
+      typeof senha !== "string" || !senha.trim()) {
+    return res.status(400).json({ mensagem: "Nome, e-mail e senha válidos são obrigatórios." });
+  }
+
+  try {
+    const existentes = await query("SELECT id_user FROM users WHERE email = ?", [email]);
+    if (existentes.length > 0) {
+      return res.status(409).json({ mensagem: "E-mail já está em uso." });
     }
- 
-    try{
-        const [rows] = await db.query('SELECT id_user FROM users WHERE email = ?', [email])
- 
-        if(rows.length > 0){
-            return res.status(409).json({message: 'Email já está em uso!'})
-        }
- 
-        const hash = await bcrypt.hash(senha, salt_rounds)
- 
-        await db.query(
-            'INSERT INTO users (nome, email, senha) VALUES (?, ?, ?)',
-            [nome, email, hash]
-        )
- 
-        res.status(201).json({message: 'Usuário cadastrado com sucesso!'})
- 
-    }catch (error){
-        console.error(error)
-        res.status(500).json({message: 'Erro ao cadastrar usuário!'})
- 
+
+    const hash = await bcrypt.hash(senha, saltRounds);
+    const resultado = await query(
+      "INSERT INTO users (nome, email, senha) VALUES (?, ?, ?)",
+      [nome.trim(), email, hash]
+    );
+    return res.status(201).json({
+      usuario: { id: resultado.insertId, nome: nome.trim(), email },
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get("/", async (req, res, next) => {
+  try {
+    const usuarios = req.query.email
+      ? await query("SELECT id_user AS id, nome, email FROM users WHERE email = ?", [req.query.email])
+      : await query("SELECT id_user AS id, nome, email FROM users ORDER BY nome");
+    return res.json(usuarios);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  const id = idValido(req.params.id);
+  if (!id) {
+    return res.status(400).json({ mensagem: "Informe um ID válido." });
+  }
+
+  try {
+    const usuarios = await query(
+      "SELECT id_user AS id, nome, email FROM users WHERE id_user = ?",
+      [id]
+    );
+    if (usuarios.length === 0) {
+      return res.status(404).json({ mensagem: "Usuário não encontrado." });
     }
-})
- 
-// Login
-app.post('/login', async(req, res) => {
-    const {email, senha} = req.body
- 
-    if(isEmpty(email) || isEmpty(senha)){
-        return res.status(400).json({message: 'E-mail e senha são obrigatórios!'})
+    return res.json(usuarios[0]);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.put("/:id", async (req, res, next) => {
+  const id = idValido(req.params.id);
+  const { nome, email, senha } = req.body;
+  if (!id) {
+    return res.status(400).json({ mensagem: "Informe um ID válido." });
+  }
+  if (typeof nome !== "string" || !nome.trim() || !emailValido(email) ||
+      typeof senha !== "string" || !senha.trim()) {
+    return res.status(400).json({ mensagem: "Nome, e-mail e senha válidos são obrigatórios." });
+  }
+
+  try {
+    const usuarios = await query("SELECT id_user FROM users WHERE id_user = ?", [id]);
+    if (usuarios.length === 0) {
+      return res.status(404).json({ mensagem: "Usuário não encontrado." });
     }
- 
-    if(!email.includes('@' && '.')){
-    return res.status(400).json({message: 'Insira um e-mail válido!'})
+
+    const hash = await bcrypt.hash(senha, saltRounds);
+    await query("UPDATE users SET nome = ?, email = ?, senha = ? WHERE id_user = ?", [
+      nome.trim(),
+      email,
+      hash,
+      id,
+    ]);
+    return res.json({ usuario: { id, nome: nome.trim(), email } });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+router.delete("/:id", async (req, res, next) => {
+  const id = idValido(req.params.id);
+  if (!id) {
+    return res.status(400).json({ mensagem: "Informe um ID válido." });
+  }
+
+  try {
+    const resultado = await query("DELETE FROM users WHERE id_user = ?", [id]);
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ mensagem: "Usuário não encontrado." });
     }
- 
-    try{
-        const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email])
-        const user = rows[0]
- 
-        if(!user){
-            return res.status(404).json({message: 'Usuário não encontrado!'})
-        }
- 
-        const senhaOK = await bcrypt.compare(senha, user.senha)
- 
-        if(!senhaOK){
-            return res.status(401).json({message: 'Senha inválida!'})
-        }
- 
-        res.status(200).json({message: 'Login realizado com sucesso!'})
- 
-    } catch(error){
-        console.error(error)
-        res.status(500).json({message: 'Erro ao realizar login!'})
- 
-    }
- 
-})
- 
-// Listar usuários
-app.get('/usuarios', async(req, res) => {
-    try{
-        const [users] = await db.query('SELECT nome, email FROM users ORDER BY nome')
-        res.json(users)
- 
-    }catch (error){
-        console.error(error)
-        res.status(500).json({message: 'Erro ao listar usuários!'})
- 
-    }
-})
- 
-// Consultar usuário por ID
-app.get('/usuarios/:id', async(req, res) => {
-    const id = Number(req.params.id)
- 
-    if(!Number.isInteger(id) || id <= 0) {
-        return res.status(400).json({message: 'Informe um ID válido'})
-    }
- 
-    try{
-        const [users] = await db.query('SELECT * FROM users WHERE id_user = ?', [id])
- 
-        if(!users){
-            return res.status(404).json({message: 'Usuário não encontrado!'})
-        }
- 
-        res.json(users)
- 
-    }catch (error){
-        console.log(error)
-        res.status(500).json({message: 'Erro ao consultar usuário!'})
- 
-    }
-})
- 
-// Atualizar usuário por ID
-app.put('/usuarios/:id', async(req, res) => {
-    const {nome, email, senha} = req.body
-    const id = Number(req.params.id)
- 
-    if(!Number.isInteger(id) || id <= 0) {
-        return res.status(400).json({message: 'Informe um ID válido'})
-    }
- 
-    if(isEmpty(nome) || isEmpty(email) || isEmpty(senha)){
-        return res.status(400).json({message: 'Todos os campos são obrigatórios!'})
-    }
- 
-    if(!email.includes('@' && '.')){
-        return res.status(400).json({message: 'Insira um e-mail válido!'})
-    }
- 
-    try{
-        const [rows] = await db.query('SELECT * FROM users WHERE id_user = ?', [id])
- 
-        if (rows.length == 0){
-            return res.status(404).json({message: 'Usuário não encontrado!'})
-        }
- 
-        const hash = await bcrypt.hash(senha, salt_rounds)
- 
-        const [usuario] = await db.query(
-            'UPDATE users SET nome = ?, email = ?, senha = ? WHERE id = ?',
-            [nome, email, hash, id]
-        )
- 
-    }catch (error){
-        console.log(error)
-        res.status(500).json({message: 'Erro ao consultar usuário!'})
- 
-    }
-})
- 
-// Remover usuário
-app.delete('/usuarios/:id', async(req, res) => {
-    const id = Number(req.params.id)
- 
-    if(!Number.isInteger(id) || id <= 0) {
-        return res.status(400).json({message: 'Informe um ID válido'})
-    }
- 
-    try{
-        const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id])
- 
-        if (rows.length == 0){
-            return res.status(404).json({message: 'Usuário não encontrado!'})
-        }
- 
-        const remocao = await db.query('DELETE FROM users WHERE id = ?', [id])
- 
-        res.status(200).json({message: 'Remoção realizada com sucesso!'})
- 
-    } catch(error){
-        console.error(error)
-        res.status(500).json({message: 'Erro ao remover usuário!'})
- 
-    }
-})
+    return res.status(204).end();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+module.exports = router;
