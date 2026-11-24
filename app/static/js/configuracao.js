@@ -2,10 +2,10 @@
 // Itens marcados com "AJUSTAR" são suposições genéricas.
 
 export const configuracao = {
-  // AJUSTAR: troque para false quando a API real (CRUD de usuários e eventos) estiver disponível.
+  // Use dados persistidos pela API; o modo simulado é apenas para demonstrações locais.
   // Com true, usuários, eventos, eventos salvos e inscrições ficam no navegador (localStorage).
   // As rotas de e-mail (/api/email) são sempre reais.
-  usarDadosSimulados: true,
+  usarDadosSimulados: false,
 
   // AJUSTAR: endereço base da API. "" = mesmo servidor do site.
   baseApi: "",

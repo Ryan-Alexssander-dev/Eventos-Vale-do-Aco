@@ -13,7 +13,8 @@ Convenções: JSON em UTF-8; erros com status HTTP adequado e corpo `{ "mensagem
 
 | Ação | Requisição | Resposta |
 |---|---|---|
-| Login | `POST /api/usuarios/login` `{ email, senha }` | `{ usuario, token? }` ou o próprio usuário. `401` se errado |
+| Login | `POST /api/usuarios/login` `{ email, senha }` | `{ usuario, token }`. `401` se errado |
+| Sessão atual | `GET /api/usuarios/me` com `Authorization: Bearer <token>` | `{ usuario }` |
 | Criar | `POST /api/usuarios` `{ nome, email, senha, avatar, tipo: "usuario", emailVerificado: false }` | usuário criado. `409` se o e-mail já existe |
 | Buscar | `GET /api/usuarios/:id` | usuário |
 | Buscar por e-mail | `GET /api/usuarios?email=...` | lista (ou usuário); `404`/lista vazia se não existir |
@@ -64,7 +65,11 @@ Campos do evento (o `normalizarEvento` também aceita os nomes do banco: `nomeEv
 `publicador` (`{ tipo: "administrador" | "organizador", nome, avatar }` — para administrador o nome não é exibido).
 
 Na criação o front também envia `idPublicador` e `tipoPublicador`; **o servidor deve usar o usuário
-autenticado**, não confiar nesses campos.
+autenticado**, não confiar nesses campos. Tokens são assinados com `SECRET_KEY`, expiram em quatro
+horas e o perfil é relido do banco em cada operação protegida.
+
+As imagens enviadas no campo `capa` aceitam PNG, JPEG ou WebP, com assinatura validada e limite de
+2 MB. O arquivo fica armazenado como data URL na coluna `eventos.capa`.
 
 ## Rotas de e-mail (já implementadas neste projeto) — `/api/email`
 
@@ -86,6 +91,10 @@ topo de `app/services/codigosVerificacao.js`). O envio usa o SMTP do Google conf
 - **Login** sem revelar se o e-mail existe; limite de tentativas; devolver `emailVerificado`.
 - **Upload de capa:** validar tipo real do arquivo, limite de 2 MB, nome gerado pelo servidor, sem SVG.
 - **Datas:** cuidado com fuso horário ao serializar `DATE` do MySQL (devolver `AAAA-MM-DD` como texto).
+
+O perfil de administrador não pode ser definido pelo cadastro público. Crie a primeira conta com
+`npm run criar:admin`; as variáveis `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` são usadas apenas
+por esse comando. Rode `npm run migrate-db` para atualizar um banco já existente sem apagar registros.
 
 ## Ajustes sugeridos no banco (revisar antes de aplicar)
 

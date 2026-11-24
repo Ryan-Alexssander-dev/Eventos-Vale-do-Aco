@@ -80,8 +80,8 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
 
 ## 5. O que ainda depende de você / da equipe da API
 
-- **O modo simulado precisa estar DESLIGADO em produção** (`usarDadosSimulados: false` em `app/static/js/configuracao.js`):
-  ele inclui contas de teste e guarda tudo no navegador.
+- O modo simulado está desligado por padrão (`usarDadosSimulados: false` em `app/static/js/configuracao.js`).
+  Não o ligue em produção: ele inclui contas de teste e guarda tudo no navegador.
 - **Autorização só vale na API.** As telas protegem apenas a navegação; qualquer pessoa pode chamar a API direto.
   Veja a lista em `docs/CONTRATO-DA-API.md` (permissões de administrador, dono dos dados, bcrypt, validações, `tokenVerificacao`).
 - **Sessão sem cookie:** o usuário logado fica no armazenamento do navegador (e o `token`, se houver). Isso o deixa exposto a
@@ -91,7 +91,7 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
   Mantenha os limites e, se possível, exija token do usuário logado na rota `/inscricao`.
 - **CSRF:** sem cookie de sessão não há CSRF clássico; se a API passar a usar cookies, adicione `SameSite` e verificação de `Origin`.
 - **Limite de tentativas de login** (`express-rate-limit` ou similar) na API.
-- **Uploads de capa:** reprocessar a imagem, limite de 2 MB, nome gerado pelo servidor, sem SVG, fora de `static`.
+- **Uploads de capa:** a API aceita PNG/JPEG/WebP com assinatura validada e limite de 2 MB; reprocessar a imagem continua recomendado antes de produção.
 - **Logs:** não registrar senhas, tokens, códigos nem corpo das requisições.
 
 ## 6. Produção

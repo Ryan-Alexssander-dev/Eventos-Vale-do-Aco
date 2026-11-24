@@ -18,15 +18,13 @@ function getPool() {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      multipleStatements: false, // nunca permitir várias instruções por consulta
+      multipleStatements: false,
       ssl: config.mysql.ssl ? { rejectUnauthorized: true } : undefined,
     });
   }
   return pool;
 }
 
-// Use SEMPRE esta função com "?" no lugar dos valores — nunca monte SQL concatenando texto do usuário.
-//   const [usuario] = await query("SELECT * FROM users WHERE email = ?", [email]);
 async function query(sql, params = []) {
   const [rows] = await getPool().execute(sql, params);
   return rows;

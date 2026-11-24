@@ -19,11 +19,22 @@ mas está desativado na primeira entrega.
 ```bash
 npm install
 cp .env.example .env      # preencha o .env (veja os comentários dentro dele)
+npm run migrate-db        # cria/atualiza as tabelas sem apagar contas ou eventos existentes
+npm run criar:admin       # cria a primeira conta administrativa
 npm run dev               # http://127.0.0.1:3000
-npm test                  # testes das rotas de e-mail
+npm test                  # testes automatizados
 ```
 
 Requer Node.js 20 ou superior. Contas de teste do modo simulado e detalhes: [`docs/GUIA-DO-FRONT-END.md`](docs/GUIA-DO-FRONT-END.md).
+
+Para criar o primeiro administrador, preencha `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env`.
+A senha deve ter ao menos 12 caracteres. Execute `npm run criar:admin` uma única vez e depois remova
+`ADMIN_PASSWORD` do `.env`. O cadastro público não permite escolher o perfil de administrador. Entre
+pela tela `/login`; o token dura 4 horas e as rotas de publicação validam a permissão no servidor.
+
+Importe `VDA-Eventos.sql` no MySQL antes de executar a migração. Para uma instalação existente,
+`npm run migrate-db` adiciona as colunas necessárias e preserva os registros. Configure também
+`MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` e `SECRET_KEY` no `.env`.
 
 ## Estrutura
 

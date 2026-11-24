@@ -13,8 +13,10 @@
   "scripts": {
     "start": "node app/main.js",
     "dev": "node --watch app/main.js",
+    "migrate-db": "node scripts/migrar-banco.js",
+    "criar:admin": "node scripts/criar-administrador.js",
     "audit": "npm audit --omit=dev",
-    "test": "node --test tests/email.test.js"
+    "test": "node --test tests/email.test.js tests/admin.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -23,6 +25,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.3.0",
     "helmet": "^8.0.0",
+    "multer": "^2.5.0",
     "mysql2": "^3.15.3",
     "nodemailer": "^10.6.1"
   },
