@@ -30,7 +30,9 @@ function obterTransporte() {
 
 async function enviarEmail({ para, assunto, texto, html }) {
   if (!emailConfigurado() && !transporte) {
-    if (config.isProduction) throw new ErroEmail("SMTP não configurado.");
+    if (config.isProduction) {
+      throw new ErroEmail("SMTP não configurado.");
+    }
     console.warn(`[email — desenvolvimento] SMTP não configurado; nada foi enviado.\nPara: ${para}\nAssunto: ${assunto}\n${texto}\n`);
     return { enviado: false, simulado: true };
   }

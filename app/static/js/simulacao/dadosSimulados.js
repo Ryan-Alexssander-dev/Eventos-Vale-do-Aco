@@ -39,7 +39,9 @@ const emDias = (dias) => {
 };
 
 async function garantirSementes() {
-  if (ler(CHAVES.usuarios, null)) return;
+  if (ler(CHAVES.usuarios, null)) {
+    return;
+  }
   gravar(CHAVES.usuarios, [
     { id: "1", nome: "Administrador", email: "admin@exemplo.com", telefone: "31999990000", avatar: "leao", tipo: "administrador", emailVerificado: true, senhaHash: await resumir("Admin@123") },
     { id: "2", nome: "Maria Souza", email: "maria@exemplo.com", telefone: "31988880000", avatar: "raposa", tipo: "usuario", emailVerificado: true, senhaHash: await resumir("Senha@123") },
@@ -67,7 +69,9 @@ async function usuarios() {
 async function exigirUsuario(id) {
   const lista = await usuarios();
   const usuario = lista.find((u) => u.id === String(id));
-  if (!usuario) throw new ErroApi("Usuário não encontrado.", 404);
+  if (!usuario) {
+    throw new ErroApi("Usuário não encontrado.", 404);
+  }
   return { lista, usuario };
 }
 
@@ -75,14 +79,18 @@ async function exigirUsuario(id) {
 export async function autenticar({ email, senha }) {
   const lista = await usuarios();
   const usuario = lista.find((u) => u.email.toLowerCase() === String(email).trim().toLowerCase());
-  if (!usuario || usuario.senhaHash !== (await resumir(senha))) throw new ErroApi("E-mail ou senha incorretos.", 401);
+  if (!usuario || usuario.senhaHash !== (await resumir(senha))) {
+    throw new ErroApi("E-mail ou senha incorretos.", 401);
+  }
   return { usuario: publico(usuario), token: null };
 }
 
 export async function criarUsuario(dados) {
   const lista = await usuarios();
   const email = String(dados.email).trim().toLowerCase();
-  if (lista.some((u) => u.email.toLowerCase() === email)) throw new ErroApi("Já existe uma conta com esse e-mail.", 409);
+  if (lista.some((u) => u.email.toLowerCase() === email)) {
+    throw new ErroApi("Já existe uma conta com esse e-mail.", 409);
+  }
   const usuario = {
     id: novoId(), nome: dados.nome, email, telefone: dados.telefone, avatar: dados.avatar ?? "",
     tipo: "usuario", emailVerificado: false, senhaHash: await resumir(dados.senha),
@@ -103,7 +111,9 @@ export async function buscarUsuarioPorEmail(email) {
 export async function atualizarUsuario(id, parcial) {
   const { lista, usuario } = await exigirUsuario(id);
   for (const campo of ["nome", "telefone", "avatar", "notificacoes", "cidadesInteresse"]) {
-    if (parcial[campo] !== undefined) usuario[campo] = parcial[campo];
+    if (parcial[campo] !== undefined) {
+      usuario[campo] = parcial[campo];
+    }
   }
   gravar(CHAVES.usuarios, lista);
   return publico(usuario);
@@ -111,7 +121,9 @@ export async function atualizarUsuario(id, parcial) {
 
 export async function atualizarSenha(id, { senhaAtual, novaSenha }) {
   const { lista, usuario } = await exigirUsuario(id);
-  if (usuario.senhaHash !== (await resumir(senhaAtual))) throw new ErroApi("A senha atual está incorreta.", 403);
+  if (usuario.senhaHash !== (await resumir(senhaAtual))) {
+    throw new ErroApi("A senha atual está incorreta.", 403);
+  }
   usuario.senhaHash = await resumir(novaSenha);
   gravar(CHAVES.usuarios, lista);
 }
@@ -119,7 +131,9 @@ export async function atualizarSenha(id, { senhaAtual, novaSenha }) {
 export async function redefinirSenha({ email, novaSenha }) {
   const lista = await usuarios();
   const usuario = lista.find((u) => u.email.toLowerCase() === String(email).trim().toLowerCase());
-  if (!usuario) throw new ErroApi("Não encontramos uma conta com esse e-mail.", 404);
+  if (!usuario) {
+    throw new ErroApi("Não encontramos uma conta com esse e-mail.", 404);
+  }
   usuario.senhaHash = await resumir(novaSenha);
   gravar(CHAVES.usuarios, lista);
 }
@@ -132,7 +146,9 @@ export async function confirmarEmail(id) {
 
 export async function excluirUsuario(id, senha) {
   const { lista, usuario } = await exigirUsuario(id);
-  if (usuario.senhaHash !== (await resumir(senha))) throw new ErroApi("A senha está incorreta.", 403);
+  if (usuario.senhaHash !== (await resumir(senha))) {
+    throw new ErroApi("A senha está incorreta.", 403);
+  }
   gravar(CHAVES.usuarios, lista.filter((u) => u.id !== usuario.id));
   const salvos = ler(CHAVES.salvos, {});
   delete salvos[usuario.id];
@@ -178,7 +194,9 @@ export async function listarEventos() {
 
 export async function buscarEvento(id) {
   const evento = (await listarEventos()).find((e) => e.id === String(id));
-  if (!evento) throw new ErroApi("Evento não encontrado.", 404);
+  if (!evento) {
+    throw new ErroApi("Evento não encontrado.", 404);
+  }
   return evento;
 }
 
@@ -213,7 +231,9 @@ export async function criarEvento(dados) {
 export async function atualizarEvento(id, dados) {
   const eventos = ler(CHAVES.eventos, []);
   const indice = eventos.findIndex((e) => e.id === String(id));
-  if (indice < 0) throw new ErroApi("Evento não encontrado.", 404);
+  if (indice < 0) {
+    throw new ErroApi("Evento não encontrado.", 404);
+  }
   const capa = dados.capa instanceof File ? await reduzirImagem(dados.capa) : eventos[indice].capa;
   eventos[indice] = { ...eventos[indice], ...registroDoEvento(dados, capa), id: eventos[indice].id, publicador: eventos[indice].publicador };
   gravar(CHAVES.eventos, eventos);

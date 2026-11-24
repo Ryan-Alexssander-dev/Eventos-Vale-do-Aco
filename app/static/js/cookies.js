@@ -3,7 +3,9 @@
 
 export function lerCookie(nome) {
   const par = document.cookie.split("; ").find((linha) => linha.startsWith(`${nome}=`));
-  if (!par) return null;
+  if (!par) {
+    return null;
+  }
   try {
     return decodeURIComponent(par.slice(nome.length + 1));
   } catch {
@@ -13,7 +15,9 @@ export function lerCookie(nome) {
 
 export function gravarCookie(nome, valor, { dias = 365 } = {}) {
   const partes = [`${nome}=${encodeURIComponent(valor)}`, `Max-Age=${Math.round(dias * 86400)}`, "Path=/", "SameSite=Lax"];
-  if (window.location.protocol === "https:") partes.push("Secure");
+  if (window.location.protocol === "https:") {
+    partes.push("Secure");
+  }
   document.cookie = partes.join("; ");
 }
 

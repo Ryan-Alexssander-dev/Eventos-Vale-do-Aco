@@ -24,20 +24,26 @@ export function podeUsarPreferencias() {
 
 export function salvarConsentimento({ preferencias }) {
   gravarCookie(NOME_COOKIE, JSON.stringify({ v: VERSAO, preferencias: Boolean(preferencias), data: new Date().toISOString().slice(0, 10) }), { dias: 180 });
-  if (!preferencias) COOKIES_DE_PREFERENCIAS.forEach(apagarCookie);
+  if (!preferencias) {
+    COOKIES_DE_PREFERENCIAS.forEach(apagarCookie);
+  }
   document.dispatchEvent(new CustomEvent("vda:consentimento", { detail: { preferencias: Boolean(preferencias) } }));
 }
 
 export function iniciarConsentimento() {
   const banner = document.getElementById("bannerCookies");
   const modalElemento = document.getElementById("modalCookies");
-  if (!banner || !modalElemento) return;
+  if (!banner || !modalElemento) {
+    return;
+  }
 
   const campoPreferencias = document.getElementById("cookiesPreferencias");
   const modal = () => window.bootstrap.Modal.getOrCreateInstance(modalElemento);
 
   const esconderBanner = () => banner.classList.add("d-none");
-  if (!obterConsentimento()) banner.classList.remove("d-none");
+  if (!obterConsentimento()) {
+    banner.classList.remove("d-none");
+  }
 
   const acoes = {
     aceitarTodos() {

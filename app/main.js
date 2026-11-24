@@ -17,7 +17,9 @@ function createApp() {
   app.disable("x-powered-by");
   app.use(compression()); // respostas menores = páginas mais rápidas
   // Atrás de proxy (Render, Railway, Nginx...) o Express precisa confiar nele para enxergar HTTPS e o IP real.
-  if (config.isProduction) app.set("trust proxy", 1);
+  if (config.isProduction) {
+    app.set("trust proxy", 1);
+  }
 
   // Cabeçalhos de segurança. A política permite os recursos externos usados pelo site:
   // Bootstrap via jsDelivr e fonte Inter via Google Fonts.

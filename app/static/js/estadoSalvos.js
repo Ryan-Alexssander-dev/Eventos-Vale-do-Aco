@@ -12,7 +12,9 @@ function avisarMudanca() {
 
 export async function carregarSalvos() {
   const usuario = obterUsuario();
-  if (!usuario) return [];
+  if (!usuario) {
+    return [];
+  }
   const eventos = await listarEventosSalvos(usuario.id);
   ids = new Set(eventos.map((e) => e.id));
   avisarMudanca();

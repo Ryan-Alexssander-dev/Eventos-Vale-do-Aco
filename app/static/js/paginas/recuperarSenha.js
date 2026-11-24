@@ -7,7 +7,9 @@ import { limparVerificacaoPendente, obterVerificacaoPendente, salvarVerificacaoP
 import { ativarValidacaoAoVivo, validarCampos, validarConfirmacao, validarEmail, validarSenhaNova } from "../validacoes.js";
 
 const { continuar } = iniciarPagina({ exigir: "visitante" });
-if (continuar) iniciar();
+if (continuar) {
+  iniciar();
+}
 
 function iniciar() {
   const etapaNova = new URLSearchParams(window.location.search).get("etapa") === "nova";
@@ -29,7 +31,9 @@ function iniciarPedidoDeCodigo() {
   formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     esconderAlerta();
-    if (!validarCampos(formulario, regras)) return;
+    if (!validarCampos(formulario, regras)) {
+      return;
+    }
 
     const email = formulario.campoEmail.value.trim().toLowerCase();
     definirCarregando(botao, true, "Enviando...");
@@ -66,7 +70,9 @@ function iniciarNovaSenha(pendente) {
   formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     esconderAlerta();
-    if (!validarCampos(formulario, regras)) return;
+    if (!validarCampos(formulario, regras)) {
+      return;
+    }
 
     definirCarregando(botao, true, "Salvando...");
     try {

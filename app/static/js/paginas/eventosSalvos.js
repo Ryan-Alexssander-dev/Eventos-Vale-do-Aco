@@ -9,7 +9,9 @@ import { iniciarModalEvento } from "../modalEvento.js";
 import { lerPreferencias, salvarPreferencias } from "../preferencias.js";
 
 const { continuar } = iniciarPagina({ exigir: "logado" });
-if (continuar) iniciar();
+if (continuar) {
+  iniciar();
+}
 
 const semAcentos = (texto) => String(texto).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
@@ -48,20 +50,36 @@ async function iniciar() {
       limite.setDate(limite.getDate() + 7);
       return data >= base && data <= limite;
     }
-    if (periodo === "mes") return data >= base && data.getMonth() === base.getMonth() && data.getFullYear() === base.getFullYear();
-    if (periodo === "passados") return data < base;
+    if (periodo === "mes") {
+      return data >= base && data.getMonth() === base.getMonth() && data.getFullYear() === base.getFullYear();
+    }
+    if (periodo === "passados") {
+      return data < base;
+    }
     return true;
   }
 
   function filtrar(filtros) {
     const termo = semAcentos(filtros.busca.trim());
     return salvos.filter((evento) => {
-      if (filtros.cidade !== "todas" && evento.cidade !== filtros.cidade) return false;
-      if (filtros.categoria !== "todas" && evento.categoria !== filtros.categoria) return false;
-      if (filtros.valor === "gratuito" && !evento.gratuito) return false;
-      if (filtros.valor === "pago" && evento.gratuito) return false;
-      if (!passaNoPeriodo(evento, filtros.periodo)) return false;
-      if (!termo) return true;
+      if (filtros.cidade !== "todas" && evento.cidade !== filtros.cidade) {
+        return false;
+      }
+      if (filtros.categoria !== "todas" && evento.categoria !== filtros.categoria) {
+        return false;
+      }
+      if (filtros.valor === "gratuito" && !evento.gratuito) {
+        return false;
+      }
+      if (filtros.valor === "pago" && evento.gratuito) {
+        return false;
+      }
+      if (!passaNoPeriodo(evento, filtros.periodo)) {
+        return false;
+      }
+      if (!termo) {
+        return true;
+      }
       return semAcentos([evento.titulo, evento.local, evento.descricao, evento.cidade, rotuloCategoria(evento.categoria)].join(" ")).includes(termo);
     });
   }
@@ -92,7 +110,9 @@ async function iniciar() {
     listaPassados.replaceChildren(...passados.map(criarLinhaEvento));
     secaoPassados.classList.toggle("d-none", passados.length === 0);
     botaoPassados.textContent = `Eventos que já aconteceram (${passados.length})`;
-    if (filtros.periodo === "passados" && passados.length) window.bootstrap.Collapse.getOrCreateInstance(blocoPassados, { toggle: false }).show();
+    if (filtros.periodo === "passados" && passados.length) {
+      window.bootstrap.Collapse.getOrCreateInstance(blocoPassados, { toggle: false }).show();
+    }
 
     total.textContent = pluralizar(salvos.length, "evento salvo", "eventos salvos");
     vazioSalvos.classList.toggle("d-none", salvos.length > 0);
@@ -119,7 +139,9 @@ async function iniciar() {
 
   document.getElementById("paginaSalvos").addEventListener("click", async (e) => {
     const botao = e.target.closest("[data-remover-salvo]");
-    if (!botao) return;
+    if (!botao) {
+      return;
+    }
     botao.disabled = true;
     try {
       await alternarSalvo(botao.dataset.removerSalvo);

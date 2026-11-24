@@ -10,7 +10,9 @@ import { validarCodigo } from "../validacoes.js";
 const INTERVALO_REENVIO_S = 60;
 
 const { continuar } = iniciarPagina({ exigir: "visitante" });
-if (continuar) iniciar();
+if (continuar) {
+  iniciar();
+}
 
 function iniciar() {
   const pendente = obterVerificacaoPendente();
@@ -28,7 +30,9 @@ function iniciar() {
   let temporizador;
 
   document.getElementById("textoEmailDestino").textContent = mascararEmail(pendente.email);
-  if (pendente.erroEnvio) mostrarAlerta("Não conseguimos enviar o e-mail agora. Toque em \"Reenviar código\".", "erro");
+  if (pendente.erroEnvio) {
+    mostrarAlerta("Não conseguimos enviar o e-mail agora. Toque em \"Reenviar código\".", "erro");
+  }
 
   // ---- Caixas do código -----------------------------------------------------------------------
   const lerCodigo = () => caixas.map((caixa) => caixa.value).join("");
@@ -42,12 +46,20 @@ function iniciar() {
     caixa.addEventListener("input", () => {
       caixa.value = caixa.value.replace(/\D/g, "").slice(-1);
       mostrarErro("");
-      if (caixa.value && caixas[indice + 1]) caixas[indice + 1].focus();
+      if (caixa.value && caixas[indice + 1]) {
+        caixas[indice + 1].focus();
+      }
     });
     caixa.addEventListener("keydown", (e) => {
-      if (e.key === "Backspace" && !caixa.value && caixas[indice - 1]) caixas[indice - 1].focus();
-      if (e.key === "ArrowLeft" && caixas[indice - 1]) caixas[indice - 1].focus();
-      if (e.key === "ArrowRight" && caixas[indice + 1]) caixas[indice + 1].focus();
+      if (e.key === "Backspace" && !caixa.value && caixas[indice - 1]) {
+        caixas[indice - 1].focus();
+      }
+      if (e.key === "ArrowLeft" && caixas[indice - 1]) {
+        caixas[indice - 1].focus();
+      }
+      if (e.key === "ArrowRight" && caixas[indice + 1]) {
+        caixas[indice + 1].focus();
+      }
     });
     caixa.addEventListener("paste", (e) => {
       e.preventDefault();
@@ -69,11 +81,15 @@ function iniciar() {
       textoReenvio.textContent = restante > 0 ? `Você poderá reenviar em ${restante}s` : "Não recebeu o e-mail?";
     };
     atualizar();
-    if (restante <= 0) return;
+    if (restante <= 0) {
+      return;
+    }
     temporizador = setInterval(() => {
       restante -= 1;
       atualizar();
-      if (restante <= 0) clearInterval(temporizador);
+      if (restante <= 0) {
+        clearInterval(temporizador);
+      }
     }, 1000);
   }
   const jaPassou = Math.floor((Date.now() - (pendente.enviadoEm ?? 0)) / 1000);

@@ -3,8 +3,12 @@
 
 export function criarElemento(tag, { classe, texto, atributos = {}, dados = {} } = {}, ...filhos) {
   const elemento = document.createElement(tag);
-  if (classe) elemento.className = classe;
-  if (texto !== undefined) elemento.textContent = texto;
+  if (classe) {
+    elemento.className = classe;
+  }
+  if (texto !== undefined) {
+    elemento.textContent = texto;
+  }
   for (const [nome, valor] of Object.entries(atributos)) elemento.setAttribute(nome, valor);
   for (const [nome, valor] of Object.entries(dados)) elemento.dataset[nome] = valor;
   elemento.append(...filhos.filter(Boolean));

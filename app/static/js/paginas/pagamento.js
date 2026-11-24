@@ -6,7 +6,9 @@ import { definirCarregando, iniciarPagina, mostrarAlerta } from "../interface.js
 import { buscarEvento } from "../servicoEventos.js";
 
 const { continuar, usuario } = iniciarPagina({ exigir: "logado" });
-if (continuar) iniciar(usuario);
+if (continuar) {
+  iniciar(usuario);
+}
 
 async function iniciar(usuario) {
   const idEvento = new URLSearchParams(window.location.search).get("evento");

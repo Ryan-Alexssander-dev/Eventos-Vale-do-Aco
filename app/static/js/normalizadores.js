@@ -16,7 +16,9 @@ export function normalizarPublicador(bruto) {
 }
 
 export function normalizarEvento(bruto) {
-  if (!bruto) return null;
+  if (!bruto) {
+    return null;
+  }
   const preco = Number(bruto.preco ?? bruto.precoIngresso ?? 0) || 0;
   const hora = String(bruto.hora ?? bruto.horaEvento ?? "").match(/\d{2}:\d{2}/)?.[0] ?? "";
   return {
@@ -38,7 +40,9 @@ export function normalizarEvento(bruto) {
 }
 
 export function normalizarUsuario(bruto) {
-  if (!bruto) return null;
+  if (!bruto) {
+    return null;
+  }
   return {
     id: String(bruto.id ?? bruto.id_user ?? bruto.idUsuario ?? ""),
     nome: bruto.nome ?? "",
@@ -56,10 +60,14 @@ export function normalizarUsuario(bruto) {
 export function eventoParaApi(dados) {
   const { capa, ...resto } = dados;
   const corpo = { ...resto };
-  if (!(capa instanceof File)) return corpo;
+  if (!(capa instanceof File)) {
+    return corpo;
+  }
   const formulario = new FormData();
   for (const [campo, valor] of Object.entries(corpo)) {
-    if (valor !== undefined && valor !== null) formulario.append(campo, valor);
+    if (valor !== undefined && valor !== null) {
+      formulario.append(campo, valor);
+    }
   }
   formulario.append("capa", capa);
   return formulario;

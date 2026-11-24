@@ -14,8 +14,12 @@ let memoria = {};
 
 function sanear(bruto) {
   const saida = {};
-  if (configuracao.cidades.includes(bruto?.cidade)) saida.cidade = bruto.cidade;
-  if (VALORES_PRECO.includes(bruto?.valor)) saida.valor = bruto.valor;
+  if (configuracao.cidades.includes(bruto?.cidade)) {
+    saida.cidade = bruto.cidade;
+  }
+  if (VALORES_PRECO.includes(bruto?.valor)) {
+    saida.valor = bruto.valor;
+  }
   const s = bruto?.salvos ?? {};
   saida.salvos = {
     cidade: configuracao.cidades.includes(s.cidade) ? s.cidade : "todas",
@@ -39,16 +43,22 @@ export function lerPreferencias() {
 
 export function salvarPreferencias(parcial) {
   memoria = { ...lerPreferencias(), ...parcial };
-  if (podeUsarPreferencias()) gravarCookie(COOKIE_PREFERENCIAS, JSON.stringify(sanear(memoria)), { dias: 180 });
+  if (podeUsarPreferencias()) {
+    gravarCookie(COOKIE_PREFERENCIAS, JSON.stringify(sanear(memoria)), { dias: 180 });
+  }
 }
 
 // Ao aceitar os cookies depois de já ter escolhido filtros, grava o que está em memória.
 document.addEventListener("vda:consentimento", (e) => {
-  if (e.detail.preferencias && Object.keys(memoria).length) salvarPreferencias(memoria);
+  if (e.detail.preferencias && Object.keys(memoria).length) {
+    salvarPreferencias(memoria);
+  }
 });
 
 export function lembrarEmail(email) {
-  if (podeUsarPreferencias()) gravarCookie(COOKIE_EMAIL, email, { dias: 90 });
+  if (podeUsarPreferencias()) {
+    gravarCookie(COOKIE_EMAIL, email, { dias: 90 });
+  }
 }
 
 export function obterEmailLembrado() {

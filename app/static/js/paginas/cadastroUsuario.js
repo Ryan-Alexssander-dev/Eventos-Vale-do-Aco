@@ -12,7 +12,9 @@ import {
 } from "../validacoes.js";
 
 const { continuar } = iniciarPagina({ exigir: "visitante" });
-if (continuar) iniciar();
+if (continuar) {
+  iniciar();
+}
 
 function iniciar() {
   const formulario = document.getElementById("formularioCadastroUsuario");
@@ -35,13 +37,17 @@ function iniciar() {
   };
   ativarValidacaoAoVivo(formulario, regras);
   formulario.campoSenha.addEventListener("input", () => {
-    if (formulario.campoConfirmarSenha.value) formulario.campoConfirmarSenha.dispatchEvent(new Event("input"));
+    if (formulario.campoConfirmarSenha.value) {
+      formulario.campoConfirmarSenha.dispatchEvent(new Event("input"));
+    }
   });
 
   formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     esconderAlerta();
-    if (!validarCampos(formulario, regras)) return;
+    if (!validarCampos(formulario, regras)) {
+      return;
+    }
 
     const dados = {
       nome: formulario.campoNome.value.trim().replace(/\s+/g, " "),

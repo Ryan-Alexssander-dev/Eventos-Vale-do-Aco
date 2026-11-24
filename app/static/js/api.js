@@ -29,7 +29,9 @@ export async function requisitar(caminho, opcoes = {}) {
 
   const url = new URL(configuracao.baseApi + caminho, window.location.origin);
   for (const [nome, valor] of Object.entries(parametros ?? {})) {
-    if (valor !== undefined && valor !== null && valor !== "") url.searchParams.set(nome, valor);
+    if (valor !== undefined && valor !== null && valor !== "") {
+      url.searchParams.set(nome, valor);
+    }
   }
 
   const ehArquivo = corpo instanceof FormData;
@@ -77,17 +79,25 @@ export async function requisitar(caminho, opcoes = {}) {
 
 // As respostas podem vir como lista pura ou embrulhadas ({ dados: [...] }, { eventos: [...] }...).
 export function extrairLista(dados, chaves = []) {
-  if (Array.isArray(dados)) return dados;
+  if (Array.isArray(dados)) {
+    return dados;
+  }
   for (const chave of [...chaves, "dados", "itens", "resultados", "lista"]) {
-    if (Array.isArray(dados?.[chave])) return dados[chave];
+    if (Array.isArray(dados?.[chave])) {
+      return dados[chave];
+    }
   }
   return [];
 }
 
 export function extrairItem(dados, chaves = []) {
-  if (!dados || typeof dados !== "object" || Array.isArray(dados)) return dados ?? null;
+  if (!dados || typeof dados !== "object" || Array.isArray(dados)) {
+    return dados ?? null;
+  }
   for (const chave of [...chaves, "dados", "item", "resultado"]) {
-    if (dados[chave] && typeof dados[chave] === "object") return dados[chave];
+    if (dados[chave] && typeof dados[chave] === "object") {
+      return dados[chave];
+    }
   }
   return dados;
 }

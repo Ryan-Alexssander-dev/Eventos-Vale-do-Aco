@@ -92,7 +92,9 @@ function criarToken({ email, finalidade }, agora = Date.now()) {
 // Para a equipe da API: confirma que o token é autêntico e ainda válido. Devolve { email, finalidade } ou null.
 function verificarToken(token, agora = Date.now()) {
   const [corpo, assinatura] = String(token ?? "").split(".");
-  if (!corpo || !assinatura || !iguais(assinatura, assinar(`token|${corpo}`))) return null;
+  if (!corpo || !assinatura || !iguais(assinatura, assinar(`token|${corpo}`))) {
+    return null;
+  }
   try {
     const dados = JSON.parse(Buffer.from(corpo, "base64url").toString());
     return agora < dados.exp ? { email: dados.email, finalidade: dados.finalidade } : null;
@@ -103,7 +105,9 @@ function verificarToken(token, agora = Date.now()) {
 
 function limparExpirados(agora = Date.now()) {
   for (const [chave, registro] of registros) {
-    if (agora > registro.expiraEm + 60 * 60 * 1000) registros.delete(chave);
+    if (agora > registro.expiraEm + 60 * 60 * 1000) {
+      registros.delete(chave);
+    }
   }
 }
 setInterval(limparExpirados, 10 * 60 * 1000).unref();

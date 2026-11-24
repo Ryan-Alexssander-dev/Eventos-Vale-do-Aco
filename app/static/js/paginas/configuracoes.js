@@ -4,7 +4,9 @@ import { definirCarregando, iniciarPagina, mostrarAlerta } from "../interface.js
 import { listarEventosSalvos, atualizarUsuario, buscarUsuario } from "../servicoUsuarios.js";
 
 const { continuar, usuario: usuarioSessao } = iniciarPagina({ exigir: "logado" });
-if (continuar) iniciar(usuarioSessao);
+if (continuar) {
+  iniciar(usuarioSessao);
+}
 
 async function iniciar(usuarioSessao) {
   let usuario = usuarioSessao;

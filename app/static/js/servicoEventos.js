@@ -23,9 +23,13 @@ export function invalidarCacheEventos() {
 
 // Traz todos os eventos; os filtros da tela são aplicados no navegador (rápido, sem uma requisição por tecla).
 export async function listarEventos() {
-  if (configuracao.usarDadosSimulados) return (await simulacao()).listarEventos();
+  if (configuracao.usarDadosSimulados) {
+    return (await simulacao()).listarEventos();
+  }
   const emCache = lerCache();
-  if (emCache) return emCache;
+  if (emCache) {
+    return emCache;
+  }
   const resposta = await requisitar(caminhos.eventos);
   const eventos = extrairLista(resposta, ["eventos"]).map(normalizarEvento);
   try {
@@ -37,32 +41,42 @@ export async function listarEventos() {
 }
 
 export async function buscarEvento(id) {
-  if (configuracao.usarDadosSimulados) return (await simulacao()).buscarEvento(id);
+  if (configuracao.usarDadosSimulados) {
+    return (await simulacao()).buscarEvento(id);
+  }
   const resposta = await requisitar(`${caminhos.eventos}/${encodeURIComponent(id)}`);
   return normalizarEvento(extrairItem(resposta, ["evento"]));
 }
 
 export async function criarEvento(dados) {
   invalidarCacheEventos();
-  if (configuracao.usarDadosSimulados) return (await simulacao()).criarEvento(dados);
+  if (configuracao.usarDadosSimulados) {
+    return (await simulacao()).criarEvento(dados);
+  }
   const resposta = await requisitar(caminhos.eventos, { metodo: "POST", corpo: eventoParaApi(dados) });
   return normalizarEvento(extrairItem(resposta, ["evento"]));
 }
 
 export async function atualizarEvento(id, dados) {
   invalidarCacheEventos();
-  if (configuracao.usarDadosSimulados) return (await simulacao()).atualizarEvento(id, dados);
+  if (configuracao.usarDadosSimulados) {
+    return (await simulacao()).atualizarEvento(id, dados);
+  }
   const resposta = await requisitar(`${caminhos.eventos}/${encodeURIComponent(id)}`, { metodo: metodoAtualizacao, corpo: eventoParaApi(dados) });
   return normalizarEvento(extrairItem(resposta, ["evento"]));
 }
 
 export async function excluirEvento(id) {
   invalidarCacheEventos();
-  if (configuracao.usarDadosSimulados) return (await simulacao()).excluirEvento(id);
+  if (configuracao.usarDadosSimulados) {
+    return (await simulacao()).excluirEvento(id);
+  }
   await requisitar(`${caminhos.eventos}/${encodeURIComponent(id)}`, { metodo: "DELETE" });
 }
 
 export async function registrarInscricao(idEvento, idUsuario) {
-  if (configuracao.usarDadosSimulados) return (await simulacao()).registrarInscricao(idEvento, idUsuario);
+  if (configuracao.usarDadosSimulados) {
+    return (await simulacao()).registrarInscricao(idEvento, idUsuario);
+  }
   await requisitar(montarCaminho(caminhos.inscricoes, { idEvento }), { metodo: "POST", corpo: { idUsuario } });
 }

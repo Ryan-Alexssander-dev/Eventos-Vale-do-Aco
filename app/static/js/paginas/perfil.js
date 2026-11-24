@@ -11,7 +11,9 @@ import {
 } from "../validacoes.js";
 
 const { continuar, usuario: usuarioSessao } = iniciarPagina({ exigir: "logado" });
-if (continuar) iniciar(usuarioSessao);
+if (continuar) {
+  iniciar(usuarioSessao);
+}
 
 async function iniciar(usuarioSessao) {
   let usuario = usuarioSessao;
@@ -56,7 +58,9 @@ async function iniciar(usuarioSessao) {
   $("formularioAvatar").addEventListener("submit", (e) => {
     e.preventDefault();
     const avatar = obterAvatarSelecionado(seletor);
-    if (!avatar) return mostrarAlerta("Escolha um avatar.", "erro");
+    if (!avatar) {
+      return mostrarAlerta("Escolha um avatar.", "erro");
+    }
     salvar($("formularioAvatar").querySelector("button[type=submit]"), "Salvando...", { avatar }, "Avatar atualizado.");
   });
 
@@ -67,7 +71,9 @@ async function iniciar(usuarioSessao) {
   ativarValidacaoAoVivo(formularioPerfil, regrasPerfil);
   formularioPerfil.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!validarCampos(formularioPerfil, regrasPerfil)) return;
+    if (!validarCampos(formularioPerfil, regrasPerfil)) {
+      return;
+    }
     salvar(formularioPerfil.querySelector("button[type=submit]"), "Salvando...", { nome: formularioPerfil.campoNome.value.trim().replace(/\s+/g, " ") }, "Nome atualizado.");
   });
 
@@ -80,7 +86,9 @@ async function iniciar(usuarioSessao) {
   ativarValidacaoAoVivo(formularioContato, regrasContato);
   formularioContato.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!validarCampos(formularioContato, regrasContato)) return;
+    if (!validarCampos(formularioContato, regrasContato)) {
+      return;
+    }
     salvar(formularioContato.querySelector("button[type=submit]"), "Salvando...", { telefone: somenteDigitos(formularioContato.campoTelefone.value) }, "Contato atualizado.");
   });
 
@@ -95,7 +103,9 @@ async function iniciar(usuarioSessao) {
   formularioSenha.addEventListener("submit", async (e) => {
     e.preventDefault();
     esconderAlerta();
-    if (!validarCampos(formularioSenha, regrasSenha)) return;
+    if (!validarCampos(formularioSenha, regrasSenha)) {
+      return;
+    }
     const botao = formularioSenha.querySelector("button[type=submit]");
     definirCarregando(botao, true, "Alterando...");
     try {
@@ -115,7 +125,9 @@ async function iniciar(usuarioSessao) {
   const regrasExcluir = { campoSenhaExclusao: validarSenhaPreenchida };
   formularioExcluir.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!validarCampos(formularioExcluir, regrasExcluir)) return;
+    if (!validarCampos(formularioExcluir, regrasExcluir)) {
+      return;
+    }
     const botao = formularioExcluir.querySelector("button[type=submit]");
     definirCarregando(botao, true, "Excluindo...");
     try {

@@ -10,7 +10,9 @@ import { listarEventos } from "../servicoEventos.js";
 import { rotuloCategoria, atualizarBotaoSalvar } from "../componentes.js";
 
 const { continuar, usuario } = iniciarPagina({ exigir: document.body.dataset.exigir ?? null });
-if (continuar) iniciar(usuario);
+if (continuar) {
+  iniciar(usuario);
+}
 
 const semAcentos = (texto) => String(texto).normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 
@@ -40,10 +42,18 @@ async function iniciar(usuario) {
   function filtrar() {
     const termo = semAcentos(filtros.busca.trim());
     return eventos.filter((evento) => {
-      if (filtros.cidade !== "todas" && evento.cidade !== filtros.cidade) return false;
-      if (filtros.valor === "gratuito" && !evento.gratuito) return false;
-      if (filtros.valor === "pago" && evento.gratuito) return false;
-      if (!termo) return true;
+      if (filtros.cidade !== "todas" && evento.cidade !== filtros.cidade) {
+        return false;
+      }
+      if (filtros.valor === "gratuito" && !evento.gratuito) {
+        return false;
+      }
+      if (filtros.valor === "pago" && evento.gratuito) {
+        return false;
+      }
+      if (!termo) {
+        return true;
+      }
       return semAcentos([evento.titulo, evento.local, evento.descricao, evento.cidade, rotuloCategoria(evento.categoria)].join(" ")).includes(termo);
     });
   }
@@ -68,7 +78,9 @@ async function iniciar(usuario) {
 
   abas.addEventListener("click", (e) => {
     const botao = e.target.closest("button[data-cidade]");
-    if (!botao) return;
+    if (!botao) {
+      return;
+    }
     filtros.cidade = botao.dataset.cidade;
     salvarPreferencias({ cidade: filtros.cidade === "todas" ? undefined : filtros.cidade });
     marcarAba();
@@ -100,11 +112,15 @@ async function iniciar(usuario) {
 
   grade.addEventListener("click", async (e) => {
     const botao = e.target.closest(".botao-salvar-evento");
-    if (!botao) return;
+    if (!botao) {
+      return;
+    }
     botao.disabled = true;
     try {
       const salvo = await alternarSalvo(botao.dataset.eventoId);
-      if (usuario) mostrarAviso(salvo ? "Evento salvo na sua agenda." : "Evento removido da agenda.");
+      if (usuario) {
+        mostrarAviso(salvo ? "Evento salvo na sua agenda." : "Evento removido da agenda.");
+      }
     } catch (erro) {
       mostrarAviso(erro.message, "erro");
     } finally {

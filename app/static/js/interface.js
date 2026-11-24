@@ -22,8 +22,12 @@ export function iniciarPagina({ exigir = null } = {}) {
     return { continuar: false, usuario };
   }
   if (exigir === "administrador" && !ehAdministrador(usuario)) {
-    if (usuario) window.location.replace("/home");
-    else irParaLogin();
+    if (usuario) {
+      window.location.replace("/home");
+    }
+    else {
+      irParaLogin();
+    }
     return { continuar: false, usuario };
   }
 
@@ -63,10 +67,14 @@ const iconesAlerta = {
 
 export function mostrarAlerta(texto, tipo = "info") {
   const alerta = document.getElementById("alertaFeedback");
-  if (!alerta) return;
+  if (!alerta) {
+    return;
+  }
   const [classeIcone, corIcone, classeAlerta] = iconesAlerta[tipo] ?? iconesAlerta.info;
   alerta.classList.remove("d-none", "alerta-sucesso", "alerta-erro");
-  if (classeAlerta) alerta.classList.add(classeAlerta);
+  if (classeAlerta) {
+    alerta.classList.add(classeAlerta);
+  }
   alerta.classList.add("d-flex");
   document.getElementById("iconeFeedback").className = `bi ${classeIcone} ${corIcone} fs-5`;
   document.getElementById("mensagemFeedback").textContent = texto;
@@ -81,11 +89,15 @@ export function esconderAlerta() {
 
 // Troca o estado do botão de envio (evita clique duplo e mostra o carregamento).
 export function definirCarregando(botao, ligado, textoCarregando = "Aguarde...") {
-  if (!botao) return;
+  if (!botao) {
+    return;
+  }
   const texto = botao.querySelector("[data-botao-texto]");
   const indicador = botao.querySelector("[data-botao-indicador]");
   if (texto) {
-    if (ligado) texto.dataset.original = texto.textContent;
+    if (ligado) {
+      texto.dataset.original = texto.textContent;
+    }
     texto.textContent = ligado ? textoCarregando : (texto.dataset.original ?? texto.textContent);
   }
   indicador?.classList.toggle("d-none", !ligado);

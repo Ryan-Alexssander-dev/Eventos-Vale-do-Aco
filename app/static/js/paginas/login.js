@@ -8,7 +8,9 @@ import { ehAdministrador, rotaInicialPorTipo, salvarSessao, salvarVerificacaoPen
 import { ativarValidacaoAoVivo, validarCampos, validarEmail, validarSenhaPreenchida } from "../validacoes.js";
 
 const { continuar } = iniciarPagina({ exigir: "visitante" });
-if (continuar) iniciar();
+if (continuar) {
+  iniciar();
+}
 
 function iniciar() {
   const formulario = document.getElementById("formularioLogin");
@@ -25,13 +27,19 @@ function iniciar() {
     formulario.campoEmail.value = emailLembrado;
     formulario.campoLembrar.checked = true;
   }
-  if (consulta.get("verificado")) mostrarAlerta("E-mail confirmado! Agora é só entrar com a sua conta.", "sucesso");
-  if (consulta.get("senhaAlterada")) mostrarAlerta("Senha alterada com sucesso. Entre com a nova senha.", "sucesso");
+  if (consulta.get("verificado")) {
+    mostrarAlerta("E-mail confirmado! Agora é só entrar com a sua conta.", "sucesso");
+  }
+  if (consulta.get("senhaAlterada")) {
+    mostrarAlerta("Senha alterada com sucesso. Entre com a nova senha.", "sucesso");
+  }
 
   formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     esconderAlerta();
-    if (!validarCampos(formulario, regras)) return;
+    if (!validarCampos(formulario, regras)) {
+      return;
+    }
 
     const email = formulario.campoEmail.value.trim();
     definirCarregando(botao, true, "Entrando...");
@@ -50,8 +58,12 @@ function iniciar() {
       }
 
       salvarSessao({ usuario, token }, formulario.campoLembrar.checked);
-      if (formulario.campoLembrar.checked) lembrarEmail(email);
-      else esquecerEmail();
+      if (formulario.campoLembrar.checked) {
+        lembrarEmail(email);
+      }
+      else {
+        esquecerEmail();
+      }
 
       const proximo = sanitizarProximo(consulta.get("proximo"));
       window.location.href = ehAdministrador(usuario) ? rotaInicialPorTipo(usuario.tipo) : (proximo ?? rotaInicialPorTipo(usuario.tipo));

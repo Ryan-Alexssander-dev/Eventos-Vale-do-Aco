@@ -39,7 +39,9 @@ export function salvarSessao({ usuario, token }, lembrar = false) {
   const armazenamento = lembrar ? localStorage : sessionStorage;
   try {
     armazenamento.setItem(chaves.usuario, JSON.stringify(usuario));
-    if (token) armazenamento.setItem(chaves.token, token);
+    if (token) {
+      armazenamento.setItem(chaves.token, token);
+    }
   } catch {
     /* armazenamento indisponível (modo privado restrito) */
   }
@@ -47,7 +49,9 @@ export function salvarSessao({ usuario, token }, lembrar = false) {
 
 export function atualizarUsuarioNaSessao(parcial) {
   const atual = obterUsuario();
-  if (!atual) return;
+  if (!atual) {
+    return;
+  }
   const armazenamento = ler(localStorage, chaves.usuario) ? localStorage : sessionStorage;
   armazenamento.setItem(chaves.usuario, JSON.stringify({ ...atual, ...parcial }));
 }
@@ -73,7 +77,9 @@ export function rotaInicialPorTipo(tipo) {
 
 // Aceita apenas caminhos internos ("/algo"), nunca endereços externos (evita redirecionamento malicioso).
 export function sanitizarProximo(valor) {
-  if (typeof valor === "string" && /^\/(?![/\\])[\w\-./?=&%]*$/.test(valor)) return valor;
+  if (typeof valor === "string" && /^\/(?![/\\])[\w\-./?=&%]*$/.test(valor)) {
+    return valor;
+  }
   return null;
 }
 

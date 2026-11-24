@@ -10,12 +10,16 @@ import { mostrarAviso } from "./interface.js";
 
 export function iniciarModalEvento(obterEventoPorId) {
   const modal = document.getElementById("modalEvento");
-  if (!modal) return;
+  if (!modal) {
+    return;
+  }
   const $ = (id) => document.getElementById(id);
   let eventoAtual = null;
 
   function atualizarSalvar() {
-    if (!eventoAtual) return;
+    if (!eventoAtual) {
+      return;
+    }
     const salvo = estaSalvo(eventoAtual.id);
     const botao = $("modalBotaoSalvar");
     botao.setAttribute("aria-pressed", String(salvo));
@@ -25,7 +29,9 @@ export function iniciarModalEvento(obterEventoPorId) {
 
   modal.addEventListener("show.bs.modal", (e) => {
     eventoAtual = obterEventoPorId(e.relatedTarget?.dataset.eventoId);
-    if (!eventoAtual) return;
+    if (!eventoAtual) {
+      return;
+    }
     const evento = eventoAtual;
 
     $("modalCidade").textContent = evento.cidade;
@@ -44,7 +50,9 @@ export function iniciarModalEvento(obterEventoPorId) {
     const site = linkSeguro(evento.link);
     const linkSite = $("modalLinkSite");
     linkSite.classList.toggle("d-none", !site);
-    if (site) linkSite.href = site;
+    if (site) {
+      linkSite.href = site;
+    }
 
     const encerrado = eventoJaAconteceu(evento);
     const inscrever = $("modalBotaoInscrever");
@@ -54,7 +62,9 @@ export function iniciarModalEvento(obterEventoPorId) {
   });
 
   $("modalBotaoSalvar").addEventListener("click", async (e) => {
-    if (!eventoAtual) return;
+    if (!eventoAtual) {
+      return;
+    }
     const botao = e.currentTarget; // currentTarget vira null depois de um "await"
     botao.disabled = true;
     try {
@@ -68,7 +78,9 @@ export function iniciarModalEvento(obterEventoPorId) {
   });
 
   $("modalBotaoInscrever").addEventListener("click", async (e) => {
-    if (!eventoAtual) return;
+    if (!eventoAtual) {
+      return;
+    }
     const botao = e.currentTarget;
     botao.disabled = true;
     try {

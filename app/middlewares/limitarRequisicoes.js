@@ -6,7 +6,7 @@ function limitarRequisicoes({ janelaMs = 10 * 60 * 1000, maximo = 20 } = {}) {
 
   setInterval(() => {
     const agora = Date.now();
-    for (const [ip, dados] of acessos) if (agora > dados.reinicia) acessos.delete(ip);
+    for (const [ip, dados] of acessos) if (agora > dados.reinicia) { acessos.delete(ip); }
   }, janelaMs).unref();
 
   return (req, res, next) => {

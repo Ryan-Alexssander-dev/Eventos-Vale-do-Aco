@@ -47,7 +47,9 @@ const looksLikePlaceholder = (value) =>
 // Chamada na inicialização. Em produção, o servidor se recusa a subir com configuração insegura.
 // (Mostra só o NOME da variável com problema — nunca o valor.)
 function assertProductionConfig() {
-  if (!config.isProduction) return;
+  if (!config.isProduction) {
+    return;
+  }
 
   const problems = [];
   if (looksLikePlaceholder(config.secretKey) || config.secretKey.length < 32) {

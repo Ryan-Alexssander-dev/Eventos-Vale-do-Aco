@@ -8,7 +8,9 @@ import {
 } from "../validacoes.js";
 
 const { continuar, usuario } = iniciarPagina({ exigir: "administrador" });
-if (continuar) iniciar(usuario);
+if (continuar) {
+  iniciar(usuario);
+}
 
 async function iniciar(usuario) {
   const formulario = document.getElementById("formularioEvento");
@@ -48,7 +50,9 @@ async function iniciar(usuario) {
   formulario.campoGratuito.addEventListener("change", alternarGratuito);
   formulario.campoDescricao.addEventListener("input", atualizarContador);
   formulario.campoCapa.addEventListener("change", () => {
-    if (enderecoPrevia) URL.revokeObjectURL(enderecoPrevia);
+    if (enderecoPrevia) {
+      URL.revokeObjectURL(enderecoPrevia);
+    }
     const arquivo = formulario.campoCapa.files[0];
     if (arquivo && !validarImagem(arquivo)) {
       enderecoPrevia = URL.createObjectURL(arquivo);
@@ -75,7 +79,9 @@ async function iniciar(usuario) {
       formulario.campoPreco.value = evento.gratuito ? "" : evento.preco;
       formulario.campoVagas.value = evento.vagas ?? "";
       formulario.campoLink.value = evento.link;
-      if (evento.capa) previa.src = evento.capa;
+      if (evento.capa) {
+        previa.src = evento.capa;
+      }
     } catch (erro) {
       mostrarAlerta(erro.message, "erro");
       formulario.querySelector("fieldset").disabled = true;
@@ -87,7 +93,9 @@ async function iniciar(usuario) {
   formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     esconderAlerta();
-    if (!validarCampos(formulario, regras)) return;
+    if (!validarCampos(formulario, regras)) {
+      return;
+    }
 
     const gratuito = formulario.campoGratuito.checked;
     const dados = {
@@ -108,8 +116,11 @@ async function iniciar(usuario) {
 
     definirCarregando(botao, true, "Salvando...");
     try {
-      if (idEdicao) await atualizarEvento(idEdicao, dados);
-      else await criarEvento(dados);
+      if (idEdicao) {
+        await atualizarEvento(idEdicao, dados);
+      } else {
+        await criarEvento(dados);
+      }
       window.location.href = `/admin?${idEdicao ? "editado" : "publicado"}=1`;
     } catch (erro) {
       mostrarAlerta(erro.message, "erro");

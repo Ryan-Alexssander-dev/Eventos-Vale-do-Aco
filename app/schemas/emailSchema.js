@@ -12,25 +12,39 @@ function validarEmail(valor) {
 
 function validarPedidoCodigo(corpo) {
   const email = validarEmail(corpo?.email);
-  if (!email) return { valido: false, mensagem: "Informe um e-mail válido." };
-  if (!FINALIDADES.includes(corpo?.finalidade)) return { valido: false, mensagem: "Finalidade inválida." };
+  if (!email) {
+    return { valido: false, mensagem: "Informe um e-mail válido." };
+  }
+  if (!FINALIDADES.includes(corpo?.finalidade)) {
+    return { valido: false, mensagem: "Finalidade inválida." };
+  }
   return { valido: true, dados: { email, finalidade: corpo.finalidade, nome: texto(corpo?.nome, 50) } };
 }
 
 function validarConferenciaCodigo(corpo) {
   const email = validarEmail(corpo?.email);
-  if (!email) return { valido: false, mensagem: "Informe um e-mail válido." };
-  if (!FINALIDADES.includes(corpo?.finalidade)) return { valido: false, mensagem: "Finalidade inválida." };
-  if (!/^\d{6}$/.test(String(corpo?.codigo ?? ""))) return { valido: false, mensagem: "Digite os 6 dígitos do código." };
+  if (!email) {
+    return { valido: false, mensagem: "Informe um e-mail válido." };
+  }
+  if (!FINALIDADES.includes(corpo?.finalidade)) {
+    return { valido: false, mensagem: "Finalidade inválida." };
+  }
+  if (!/^\d{6}$/.test(String(corpo?.codigo ?? ""))) {
+    return { valido: false, mensagem: "Digite os 6 dígitos do código." };
+  }
   return { valido: true, dados: { email, finalidade: corpo.finalidade, codigo: String(corpo.codigo) } };
 }
 
 function validarPedidoInscricao(corpo) {
   const email = validarEmail(corpo?.email);
-  if (!email) return { valido: false, mensagem: "Informe um e-mail válido." };
+  if (!email) {
+    return { valido: false, mensagem: "Informe um e-mail válido." };
+  }
   const evento = corpo?.evento ?? {};
   const titulo = texto(evento.titulo, 200);
-  if (titulo.length < 3) return { valido: false, mensagem: "Dados do evento inválidos." };
+  if (titulo.length < 3) {
+    return { valido: false, mensagem: "Dados do evento inválidos." };
+  }
   const preco = Number(evento.preco);
   return {
     valido: true,
