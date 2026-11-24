@@ -1,0 +1,42 @@
+{
+  "name": "eventosvda",
+  "version": "1.0.0",
+  "description": "Portal para divulgação e descoberta de eventos no Vale do Aço.",
+  "private": true,
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "main": "app/main.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node app/main.js",
+    "dev": "node --watch app/main.js",
+    "audit": "npm audit --omit=dev",
+    "test": "node --test tests/email.test.js"
+  },
+  "dependencies": {
+    "compression": "^1.8.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.3.0",
+    "helmet": "^8.0.0",
+    "mysql2": "^3.15.3",
+    "nodemailer": "^10.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ryan-Alexssander-dev/Eventos-Vale-do-A-o.git"
+  },
+  "keywords": [
+    "eventos",
+    "vale do aço",
+    "bootstrap",
+    "express"
+  ],
+  "bugs": {
+    "url": "https://github.com/Ryan-Alexssander-dev/Eventos-Vale-do-A-o/issues"
+  },
+  "homepage": "https://github.com/Ryan-Alexssander-dev/Eventos-Vale-do-A-o#readme"
+}

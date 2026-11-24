@@ -1,0 +1,40 @@
+# ---- Segredos e variáveis de ambiente (NUNCA versionar) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*
+
+# ---- Dependências e builds ----
+node_modules/
+dist/
+build/
+coverage/
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+
+# ---- Dados de usuários (fotos de perfil, capas enviadas) ----
+uploads/
+
+# ---- Dumps e bancos locais (o schema versionado é o VDA-Eventos.sql) ----
+*.dump
+*.sqlite
+*.sqlite3
+*.bak
+backups/
+
+# ---- Arquivos compactados (costumam levar .env e node_modules junto) ----
+*.zip
+
+# ---- Editor / sistema operacional ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp

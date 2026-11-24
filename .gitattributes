@@ -1,0 +1,5 @@
+# Normaliza as quebras de linha (evita arquivos "modificados" só por causa de Windows/CRLF)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
