@@ -1,13 +1,12 @@
-// Perfil do usuário: nome, avatar, telefone, senha e exclusão da conta.
+// Perfil do usuário: nome, avatar, senha e exclusão da conta.
 
 import { montarSeletorAvatares, obterAvatarSelecionado, urlAvatar } from "../avatares.js";
 import { definirCarregando, esconderAlerta, iniciarPagina, mostrarAlerta, mostrarAviso } from "../interface.js";
-import { aplicarMascara, formatarTelefone } from "../mascaras.js";
 import { atualizarSenha, atualizarUsuario, buscarUsuario, excluirUsuario } from "../servicoUsuarios.js";
 import { atualizarUsuarioNaSessao, sair } from "../sessao.js";
 import {
-  ativarValidacaoAoVivo, somenteDigitos, validarCampos, validarConfirmacao, validarNome,
-  validarSenhaNova, validarSenhaPreenchida, validarTelefone,
+  ativarValidacaoAoVivo, validarCampos, validarConfirmacao, validarNome,
+  validarSenhaNova, validarSenhaPreenchida,
 } from "../validacoes.js";
 
 const { continuar, usuario: usuarioSessao } = iniciarPagina({ exigir: "logado" });
@@ -41,7 +40,7 @@ async function iniciar(usuarioSessao) {
     try {
       const atualizado = await atualizarUsuario(usuario.id, parcial);
       usuario = { ...usuario, ...parcial, ...(atualizado ?? {}) };
-      atualizarUsuarioNaSessao({ nome: usuario.nome, avatar: usuario.avatar, telefone: usuario.telefone });
+      atualizarUsuarioNaSessao({ nome: usuario.nome, avatar: usuario.avatar });
       mostrarDados();
       mostrarAlerta(mensagemSucesso, "sucesso");
     } catch (erro) {
@@ -80,17 +79,6 @@ async function iniciar(usuarioSessao) {
   // ---- Contato (o e-mail é somente leitura: trocar exige nova verificação) -------------------------
   const formularioContato = $("formularioContato");
   formularioContato.campoEmail.value = usuario.email;
-  formularioContato.campoTelefone.value = usuario.telefone;
-  aplicarMascara(formularioContato.campoTelefone, formatarTelefone);
-  const regrasContato = { campoTelefone: validarTelefone };
-  ativarValidacaoAoVivo(formularioContato, regrasContato);
-  formularioContato.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!validarCampos(formularioContato, regrasContato)) {
-      return;
-    }
-    salvar(formularioContato.querySelector("button[type=submit]"), "Salvando...", { telefone: somenteDigitos(formularioContato.campoTelefone.value) }, "Contato atualizado.");
-  });
 
   // ---- Senha ---------------------------------------------------------------------------------
   const formularioSenha = $("formularioSenha");

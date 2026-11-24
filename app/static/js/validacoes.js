@@ -44,23 +44,6 @@ export function validarEmail(valor) {
   return "";
 }
 
-export function validarTelefone(valor) {
-  const digitos = somenteDigitos(valor);
-  if (!digitos) {
-    return "Informe o telefone com DDD.";
-  }
-  if (digitos.length < 10 || digitos.length > 11) {
-    return "Informe DDD + número (10 ou 11 dígitos).";
-  }
-  if (Number(digitos.slice(0, 2)) < 11) {
-    return "O DDD informado não é válido.";
-  }
-  if (digitos.length === 11 && digitos[2] !== "9") {
-    return "Celulares começam com 9 depois do DDD.";
-  }
-  return "";
-}
-
 export function validarSenhaNova(valor) {
   const senha = String(valor ?? "");
   if (senha.length < 8) {

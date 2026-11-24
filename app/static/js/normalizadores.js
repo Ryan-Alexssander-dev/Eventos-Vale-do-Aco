@@ -47,7 +47,6 @@ export function normalizarUsuario(bruto) {
     id: String(bruto.id ?? bruto.id_user ?? bruto.idUsuario ?? ""),
     nome: bruto.nome ?? "",
     email: bruto.email ?? "",
-    telefone: bruto.telefone ?? "",
     avatar: bruto.avatar ?? bruto.foto ?? "",
     tipo: bruto.tipo ?? tiposUsuario.comum,
     emailVerificado: bruto.emailVerificado ?? bruto.email_verificado ?? true,

@@ -8,6 +8,7 @@ export function formatarCnpj(valor) {
     .replace(/(\d{4})(\d)/, "$1-$2");
 }
 
+
 export function aplicarMascara(campo, formatador) {
   if (!campo) {
     return;

@@ -38,7 +38,7 @@ Nomes em pt-BR e camelCase. Cada arquivo faz uma coisa:
 | `normalizadores.js` | Converte o formato da API para o do front (aceita `nomeEvento`/`titulo` etc.) |
 | `simulacao/dadosSimulados.js` | Implementa os serviços no navegador (modo simulado) |
 | `sessao.js` | Usuário logado, redirecionamentos, `proximo` seguro |
-| `validacoes.js`, `mascaras.js` | Regras de validação e máscaras (telefone, CNPJ) |
+| `validacoes.js`, `mascaras.js` | Regras de validação e máscaras (CNPJ) |
 | `cookies.js`, `consentimento.js`, `preferencias.js` | Cookies e consentimento (LGPD) |
 | `avatares.js` | Catálogo dos 12 avatares de animais |
 | `elementos.js`, `formatacao.js`, `interface.js` | Criação segura de elementos, datas/valores, alertas, avisos |

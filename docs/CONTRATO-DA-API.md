@@ -14,20 +14,20 @@ Convenções: JSON em UTF-8; erros com status HTTP adequado e corpo `{ "mensagem
 | Ação | Requisição | Resposta |
 |---|---|---|
 | Login | `POST /api/usuarios/login` `{ email, senha }` | `{ usuario, token? }` ou o próprio usuário. `401` se errado |
-| Criar | `POST /api/usuarios` `{ nome, email, telefone, senha, avatar, tipo: "usuario", emailVerificado: false }` | usuário criado. `409` se o e-mail já existe |
+| Criar | `POST /api/usuarios` `{ nome, email, senha, avatar, tipo: "usuario", emailVerificado: false }` | usuário criado. `409` se o e-mail já existe |
 | Buscar | `GET /api/usuarios/:id` | usuário |
 | Buscar por e-mail | `GET /api/usuarios?email=...` | lista (ou usuário); `404`/lista vazia se não existir |
 | Atualizar | `PATCH /api/usuarios/:id` (ou `PUT`) com campos parciais | usuário atualizado |
 | Excluir | `DELETE /api/usuarios/:id` `{ senha }` | `204` |
 
-Campos do usuário: `id`, `nome`, `email`, `telefone` (só dígitos, 10–11), `avatar` (id do animal, ex. `"raposa"`),
+Campos do usuário: `id`, `nome`, `email`, `avatar` (id do animal, ex. `"raposa"`),
 `tipo` (`"usuario"` \| `"organizador"` \| `"administrador"`), `emailVerificado` (boolean), `notificacoes`
 (`{ lembrete, novosEventos, avisos }`), `cidadesInteresse` (lista de cidades).
 **Nunca devolver senha ou hash.**
 
 Usos do `PATCH /api/usuarios/:id`:
 
-- **Perfil:** `{ nome }`, `{ avatar }`, `{ telefone }`, `{ notificacoes, cidadesInteresse }`.
+- **Perfil:** `{ nome }`, `{ avatar }`, `{ notificacoes, cidadesInteresse }`.
 - **Trocar senha (logado):** `{ senhaAtual, novaSenha }` — conferir a senha atual; `403` se estiver errada.
 - **Confirmar e-mail:** `{ emailVerificado: true, tokenVerificacao }`.
 - **Recuperar senha:** `{ novaSenha, tokenVerificacao }`.
@@ -82,7 +82,7 @@ topo de `app/services/codigosVerificacao.js`). O envio usa o SMTP do Google conf
 - **Permissões:** criar/editar/excluir evento só para `administrador`; usuário só altera os **próprios** dados
   e eventos salvos (use o id do usuário autenticado, não o da URL/corpo).
 - **Senhas** com bcrypt/argon2; nunca em texto puro nem nas respostas. Repetir as validações de `validacoes.js`
-  (nome, e-mail, telefone, senha ≥ 8 com letras e números, tamanhos máximos, cidade/categoria da lista, preço ≥ 0, link http/https).
+  (nome, e-mail, senha ≥ 8 com letras e números, tamanhos máximos, cidade/categoria da lista, preço ≥ 0, link http/https).
 - **Login** sem revelar se o e-mail existe; limite de tentativas; devolver `emailVerificado`.
 - **Upload de capa:** validar tipo real do arquivo, limite de 2 MB, nome gerado pelo servidor, sem SVG.
 - **Datas:** cuidado com fuso horário ao serializar `DATE` do MySQL (devolver `AAAA-MM-DD` como texto).
@@ -91,7 +91,6 @@ topo de `app/services/codigosVerificacao.js`). O envio usa o SMTP do Google conf
 
 ```sql
 ALTER TABLE users
-  MODIFY telefone VARCHAR(11) NOT NULL,
   ADD COLUMN tipo ENUM('usuario','organizador','administrador') NOT NULL DEFAULT 'usuario',
   ADD COLUMN avatar VARCHAR(20) NULL,
   ADD COLUMN email_verificado TINYINT(1) NOT NULL DEFAULT 0,

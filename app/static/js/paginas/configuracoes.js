@@ -46,7 +46,7 @@ async function iniciar(usuarioSessao) {
     try {
       const eventosSalvos = await listarEventosSalvos(usuario.id).catch(() => []);
       const conteudo = JSON.stringify(
-        { geradoEm: new Date().toISOString(), conta: { nome: usuario.nome, email: usuario.email, telefone: usuario.telefone, avatar: usuario.avatar }, eventosSalvos: eventosSalvos.map((e) => ({ id: e.id, titulo: e.titulo, data: e.data })) },
+        { geradoEm: new Date().toISOString(), conta: { nome: usuario.nome, email: usuario.email, avatar: usuario.avatar }, eventosSalvos: eventosSalvos.map((e) => ({ id: e.id, titulo: e.titulo, data: e.data })) },
         null,
         2
       );

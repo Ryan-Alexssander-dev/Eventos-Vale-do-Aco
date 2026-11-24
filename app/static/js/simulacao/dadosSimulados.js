@@ -43,8 +43,8 @@ async function garantirSementes() {
     return;
   }
   gravar(CHAVES.usuarios, [
-    { id: "1", nome: "Administrador", email: "admin@exemplo.com", telefone: "31999990000", avatar: "leao", tipo: "administrador", emailVerificado: true, senhaHash: await resumir("Admin@123") },
-    { id: "2", nome: "Maria Souza", email: "maria@exemplo.com", telefone: "31988880000", avatar: "raposa", tipo: "usuario", emailVerificado: true, senhaHash: await resumir("Senha@123") },
+    { id: "1", nome: "Administrador", email: "admin@exemplo.com", avatar: "leao", tipo: "administrador", emailVerificado: true, senhaHash: await resumir("Admin@123") },
+    { id: "2", nome: "Maria Souza", email: "maria@exemplo.com", avatar: "raposa", tipo: "usuario", emailVerificado: true, senhaHash: await resumir("Senha@123") },
   ]);
   const admin = { tipo: "administrador", nome: "", avatar: "" };
   gravar(CHAVES.eventos, [
@@ -92,7 +92,7 @@ export async function criarUsuario(dados) {
     throw new ErroApi("Já existe uma conta com esse e-mail.", 409);
   }
   const usuario = {
-    id: novoId(), nome: dados.nome, email, telefone: dados.telefone, avatar: dados.avatar ?? "",
+    id: novoId(), nome: dados.nome, email, avatar: dados.avatar ?? "",
     tipo: "usuario", emailVerificado: false, senhaHash: await resumir(dados.senha),
   };
   gravar(CHAVES.usuarios, [...lista, usuario]);
@@ -110,7 +110,7 @@ export async function buscarUsuarioPorEmail(email) {
 
 export async function atualizarUsuario(id, parcial) {
   const { lista, usuario } = await exigirUsuario(id);
-  for (const campo of ["nome", "telefone", "avatar", "notificacoes", "cidadesInteresse"]) {
+  for (const campo of ["nome", "avatar", "notificacoes", "cidadesInteresse"]) {
     if (parcial[campo] !== undefined) {
       usuario[campo] = parcial[campo];
     }

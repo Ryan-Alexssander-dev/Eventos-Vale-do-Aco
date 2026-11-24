@@ -105,7 +105,7 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
 
 ## 7. LGPD (o sistema coleta dados pessoais)
 
-- Coleta: nome, e-mail, telefone, foto e, nos organizadores, CNPJ e dados de contato. Peça só o necessário.
+- Coleta: nome, e-mail, avatar e, nos organizadores, CNPJ e dados da organização. Peça só o necessário.
 - As páginas **Termos de Uso** e **Política de Privacidade** existem com texto **provisório** (comentário `TEXTO PROVISÓRIO` no HTML): substitua por um texto revisado por responsável jurídico. A **Política de Cookies** já lista os cookies reais e o banner de consentimento está implementado.
 - A tela de cadastro já tem a caixa de aceite; a API deve guardar a data/hora do aceite.
 - Já há na interface "Baixar meus dados" (gerado no navegador) e "Excluir conta" (chama a API); a API precisa apagar/anonimizar os dados de fato.

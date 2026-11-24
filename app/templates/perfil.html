@@ -131,10 +131,10 @@
 
                 <section class="painel p-4 mb-4" aria-labelledby="formularioContatoTitulo">
                     <h2 id="formularioContatoTitulo" class="painel-titulo">Contato</h2>
-                    <p class="painel-subtitulo">E-mail de acesso e telefone para contato.</p>
+                    <p class="painel-subtitulo">E-mail de acesso da conta.</p>
                     <form id="formularioContato" method="post" action="/perfil" novalidate>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
+                        <div class="row g-3">
+                            <div class="col-12">
                                 <label for="campoEmail" class="form-label">E-mail</label>
                                 <input
                                     type="email"
@@ -148,25 +148,7 @@
                                 <div class="invalid-feedback">Preencha este campo.</div>
                                 <div id="campoEmailAjuda" class="form-text">Para trocar o e-mail, fale com o suporte.</div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="campoTelefone" class="form-label">Telefone com DDD</label>
-                                <input
-                                    type="tel"
-                                    class="form-control"
-                                    id="campoTelefone"
-                                    name="telefone"
-                                    placeholder="(31) 99999-9999"
-                                    autocomplete="tel"
-                                    maxlength="15"
-                                    inputmode="tel"
-                                >
-                                <div class="invalid-feedback">Informe DDD + número.</div>
-                            </div>
                         </div>
-                        <button type="submit" class="btn botao-escuro btn-sm px-4">
-                            <span data-botao-texto>Salvar alterações</span>
-                            <span class="spinner-border spinner-border-sm ms-2 d-none" data-botao-indicador role="status" aria-hidden="true"></span>
-                        </button>
                     </form>
                 </section>
 

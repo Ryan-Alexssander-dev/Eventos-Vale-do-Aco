@@ -2,13 +2,12 @@
 
 import { avatarAleatorio, montarSeletorAvatares, obterAvatarSelecionado, urlAvatar } from "../avatares.js";
 import { definirCarregando, esconderAlerta, iniciarPagina, mostrarAlerta } from "../interface.js";
-import { aplicarMascara, formatarTelefone } from "../mascaras.js";
 import { enviarCodigoVerificacao } from "../servicoEmail.js";
 import { criarUsuario } from "../servicoUsuarios.js";
 import { salvarVerificacaoPendente } from "../sessao.js";
 import {
-  ativarValidacaoAoVivo, somenteDigitos, validarAceite, validarCampos, validarConfirmacao,
-  validarEmail, validarNome, validarSenhaNova, validarTelefone,
+  ativarValidacaoAoVivo, validarAceite, validarCampos, validarConfirmacao,
+  validarEmail, validarNome, validarSenhaNova,
 } from "../validacoes.js";
 
 const { continuar } = iniciarPagina({ exigir: "visitante" });
@@ -25,12 +24,9 @@ function iniciar() {
   const inicial = avatarAleatorio();
   previa.src = urlAvatar(inicial);
   montarSeletorAvatares(seletor, inicial, (id) => (previa.src = urlAvatar(id)));
-  aplicarMascara(formulario.campoTelefone, formatarTelefone);
-
   const regras = {
     campoNome: validarNome,
     campoEmail: validarEmail,
-    campoTelefone: validarTelefone,
     campoSenha: validarSenhaNova,
     campoConfirmarSenha: (valor) => validarConfirmacao(valor, formulario.campoSenha.value),
     campoTermos: validarAceite,
@@ -52,7 +48,6 @@ function iniciar() {
     const dados = {
       nome: formulario.campoNome.value.trim().replace(/\s+/g, " "),
       email: formulario.campoEmail.value.trim().toLowerCase(),
-      telefone: somenteDigitos(formulario.campoTelefone.value),
       senha: formulario.campoSenha.value,
       avatar: obterAvatarSelecionado(seletor) || inicial,
       tipo: "usuario",
