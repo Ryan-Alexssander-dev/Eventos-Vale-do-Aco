@@ -21,11 +21,6 @@ CREATE TABLE IF NOT EXISTS companys (
     emailEmpresa VARCHAR(255) NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS labels (
-    id_label INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nomeCategoria VARCHAR(200) NOT NULL
-) ENGINE=InnoDB;
-
 CREATE TABLE IF NOT EXISTS eventos (
     id_event INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nomeEvento VARCHAR(200) NOT NULL,
@@ -38,10 +33,8 @@ CREATE TABLE IF NOT EXISTS eventos (
     precoIngresso DECIMAL(10,2) NOT NULL DEFAULT 0,
     qtdIngresso INT UNSIGNED NULL,
     link VARCHAR(255) NULL,
-    capa MEDIUMTEXT NULL,
     id_user INT UNSIGNED NOT NULL,
     id_company INT UNSIGNED NULL,
-    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_eventos_data (dataEvento, horaEvento),
     CONSTRAINT fk_eventos_usuario FOREIGN KEY (id_user)
         REFERENCES users(id_user) ON DELETE RESTRICT,

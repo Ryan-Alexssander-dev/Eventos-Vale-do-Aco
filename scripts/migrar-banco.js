@@ -54,6 +54,8 @@ async function migrarBanco() {
     ["tipo", "ENUM('usuario', 'organizador', 'administrador') NOT NULL DEFAULT 'usuario'"],
     ["avatar", "VARCHAR(20) NULL"],
     ["email_verificado", "TINYINT(1) NOT NULL DEFAULT 1"],
+    ["notificacoes", "JSON NULL"],
+    ["cidades_interesse", "JSON NULL"],
   ];
   for (const [coluna, definicao] of colunasUsuario) {
     if (!(await existeColuna("users", coluna))) {
@@ -92,6 +94,27 @@ async function migrarBanco() {
   if (await existeColuna("eventos", "dataPublicacao")) {
     await database.query("ALTER TABLE eventos MODIFY dataPublicacao DATE NULL");
   }
+
+  await database.query(`
+    CREATE TABLE IF NOT EXISTS eventos_salvos (
+      id_user INT UNSIGNED NOT NULL,
+      id_event INT UNSIGNED NOT NULL,
+      salvo_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id_user, id_event),
+      CONSTRAINT fk_eventos_salvos_usuario FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE,
+      CONSTRAINT fk_eventos_salvos_evento FOREIGN KEY (id_event) REFERENCES eventos(id_event) ON DELETE CASCADE
+    ) ENGINE=InnoDB
+  `);
+  await database.query(`
+    CREATE TABLE IF NOT EXISTS inscricoes (
+      id_user INT UNSIGNED NOT NULL,
+      id_event INT UNSIGNED NOT NULL,
+      criada_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id_user, id_event),
+      CONSTRAINT fk_inscricoes_usuario FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE,
+      CONSTRAINT fk_inscricoes_evento FOREIGN KEY (id_event) REFERENCES eventos(id_event) ON DELETE CASCADE
+    ) ENGINE=InnoDB
+  `);
   console.log("Banco migrado. As contas existentes foram preservadas.");
 }
 

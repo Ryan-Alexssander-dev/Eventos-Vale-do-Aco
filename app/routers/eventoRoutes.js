@@ -218,6 +218,35 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
     }
   });
 
+  router.put("/:id", exigirUsuario, exigirAdministrador, processarCapa, async (req, res, next) => {
+    if (!/^[1-9]\d*$/.test(req.params.id)) {
+      return res.status(400).json({ mensagem: "Informe um ID de evento válido." });
+    }
+    try {
+      const atual = await buscarPorId(req.params.id);
+      if (!atual) {
+        return res.status(404).json({ mensagem: "Evento não encontrado." });
+      }
+      const evento = validarEvento(req.body ?? {}, atual, req.file);
+      if (!evento) {
+        return res.status(400).json({ mensagem: "Confira os dados do evento e da imagem de capa." });
+      }
+      await query(
+        `UPDATE eventos SET nomeEvento = ?, categoria = ?, descricao = ?, dataEvento = ?,
+          horaEvento = ?, cidade = ?, endereco = ?, precoIngresso = ?, qtdIngresso = ?,
+          link = ?, capa = ? WHERE id_event = ?`,
+        [
+          evento.titulo, evento.categoria, evento.descricao, evento.data, evento.hora,
+          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, evento.capa,
+          req.params.id,
+        ],
+      );
+      return res.json({ evento: await buscarPorId(req.params.id) });
+    } catch (error) {
+      return next(error);
+    }
+  });
+
   router.delete("/:id", exigirUsuario, exigirAdministrador, async (req, res, next) => {
     if (!/^[1-9]\d*$/.test(req.params.id)) {
       return res.status(400).json({ mensagem: "Informe um ID de evento válido." });
@@ -229,6 +258,24 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
       }
       return res.status(204).end();
     } catch (error) {
+      return next(error);
+    }
+  });
+
+  router.post("/:idEvento/inscricoes", exigirUsuario, async (req, res, next) => {
+    if (!/^[1-9]\d*$/.test(req.params.idEvento)) {
+      return res.status(400).json({ mensagem: "Informe um ID de evento válido." });
+    }
+    try {
+      await query(
+        "INSERT IGNORE INTO inscricoes (id_user, id_event) VALUES (?, ?)",
+        [req.usuario.id, req.params.idEvento],
+      );
+      return res.status(201).json({ ok: true });
+    } catch (error) {
+      if (error.code === "ER_NO_REFERENCED_ROW_2") {
+        return res.status(404).json({ mensagem: "Evento ou usuário não encontrado." });
+      }
       return next(error);
     }
   });
