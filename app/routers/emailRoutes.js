@@ -66,8 +66,8 @@ async function enviarInscricao(req, res, next) {
     return res.status(429).json({ mensagem: "Muitos e-mails enviados para este endereço. Tente novamente mais tarde." });
   }
   try {
-    await servicoEmail.enviarConfirmacaoInscricao({ para: dados.email, nome: dados.nome, evento: dados.evento });
-    return res.json({ ok: true });
+    const resultado = await servicoEmail.enviarConfirmacaoInscricao({ para: dados.email, nome: dados.nome, evento: dados.evento });
+    return res.json({ ok: true, enviado: resultado.enviado });
   } catch (erro) {
     if (erro instanceof servicoEmail.ErroEmail) {
       return res.status(502).json({ mensagem: "Não foi possível enviar o e-mail agora." });

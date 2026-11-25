@@ -1,6 +1,6 @@
 // Envio de e-mails pelo SMTP do Google (Gmail) com o nodemailer.
 // Configure SMTP_USERNAME, SMTP_PASSWORD (senha de app) e SMTP_FROM no .env.
-// Em desenvolvimento, sem SMTP configurado, o e-mail NÃO é enviado: o texto aparece no console do servidor.
+// Sem SMTP configurado, o envio falha explicitamente em qualquer ambiente.
 
 const config = require("../config");
 
@@ -30,11 +30,7 @@ function obterTransporte() {
 
 async function enviarEmail({ para, assunto, texto, html }) {
   if (!emailConfigurado() && !transporte) {
-    if (config.isProduction) {
-      throw new ErroEmail("SMTP não configurado.");
-    }
-    console.warn(`[email — desenvolvimento] SMTP não configurado; nada foi enviado.\nPara: ${para}\nAssunto: ${assunto}\n${texto}\n`);
-    return { enviado: false, simulado: true };
+    throw new ErroEmail("SMTP não configurado.");
   }
   try {
     await obterTransporte().sendMail({ from: config.smtp.from || config.smtp.username, to: para, subject: assunto, text: texto, html });
@@ -43,7 +39,7 @@ async function enviarEmail({ para, assunto, texto, html }) {
     console.error(`[email] falha no envio: ${erro.code ?? erro.message}`);
     throw new ErroEmail("Falha ao enviar o e-mail.");
   }
-  return { enviado: true, simulado: false };
+  return { enviado: true };
 }
 
 // ---------------------------------------------------------------------------------------------

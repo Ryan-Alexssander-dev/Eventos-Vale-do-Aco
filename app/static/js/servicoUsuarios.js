@@ -78,11 +78,16 @@ export async function redefinirSenha({ email, novaSenha, tokenVerificacao }) {
   await requisitar(`${caminhos.usuarios}/${encodeURIComponent(usuario.id)}`, { metodo: metodoAtualizacao, corpo: { novaSenha, tokenVerificacao } });
 }
 
-export async function confirmarEmail(id, tokenVerificacao) {
+export async function confirmarEmail(email, tokenVerificacao) {
   if (configuracao.usarDadosSimulados) {
-    return (await simulacao()).confirmarEmail(id, tokenVerificacao);
+    const servicoSimulado = await simulacao();
+    const usuario = await servicoSimulado.buscarUsuarioPorEmail(email);
+    if (!usuario) {
+      throw new ErroApi("Não encontramos uma conta com esse e-mail.", 404);
+    }
+    return servicoSimulado.confirmarEmail(usuario.id, tokenVerificacao);
   }
-  await requisitar(`${caminhos.usuarios}/${encodeURIComponent(id)}`, { metodo: metodoAtualizacao, corpo: { emailVerificado: true, tokenVerificacao } });
+  await requisitar(`${caminhos.usuarios}/confirmar-email`, { metodo: "POST", corpo: { tokenVerificacao } });
 }
 
 export async function excluirUsuario(id, senha) {

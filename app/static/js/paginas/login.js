@@ -4,7 +4,10 @@ import { definirCarregando, esconderAlerta, iniciarPagina, mostrarAlerta } from 
 import { esquecerEmail, lembrarEmail, obterEmailLembrado } from "../preferencias.js";
 import { enviarCodigoVerificacao } from "../servicoEmail.js";
 import { autenticar } from "../servicoUsuarios.js";
-import { ehAdministrador, rotaInicialPorTipo, salvarSessao, salvarVerificacaoPendente, sanitizarProximo } from "../sessao.js";
+import {
+  ehAdministrador, obterVerificacaoPendente, rotaInicialPorTipo,
+  salvarSessao, salvarVerificacaoPendente, sanitizarProximo,
+} from "../sessao.js";
 import { ativarValidacaoAoVivo, validarCampos, validarEmail, validarSenhaPreenchida } from "../validacoes.js";
 
 const { continuar } = iniciarPagina({ exigir: "visitante" });
@@ -47,12 +50,21 @@ function iniciar() {
       const { usuario, token } = await autenticar({ email, senha: formulario.campoSenha.value });
 
       if (usuario.emailVerificado === false) {
-        // Conta criada, mas o e-mail ainda não foi confirmado: manda um código novo.
-        const pendente = { email: usuario.email, finalidade: "cadastro", idUsuario: usuario.id, enviadoEm: Date.now() };
-        await enviarCodigoVerificacao({ email: usuario.email, nome: usuario.nome, finalidade: "cadastro" }).catch(() => {
-          pendente.erroEnvio = true;
-        });
-        salvarVerificacaoPendente(pendente);
+        const verificacaoPendente = obterVerificacaoPendente();
+        const idadeDoCodigo = Date.now() - (verificacaoPendente?.enviadoEm ?? 0);
+        const codigoAindaValido = idadeDoCodigo >= 0 && idadeDoCodigo < 10 * 60 * 1000;
+        const mesmoEmail = verificacaoPendente?.email?.toLowerCase() === usuario.email.toLowerCase();
+        const reutilizarCodigo = mesmoEmail && verificacaoPendente.finalidade === "cadastro" &&
+          codigoAindaValido && !verificacaoPendente.erroEnvio;
+
+        if (!reutilizarCodigo) {
+          // Mantém a recuperação para contas antigas ou códigos expirados.
+          const pendente = { email: usuario.email, finalidade: "cadastro", idUsuario: usuario.id, enviadoEm: Date.now() };
+          await enviarCodigoVerificacao({ email: usuario.email, nome: usuario.nome, finalidade: "cadastro" }).catch(() => {
+            pendente.erroEnvio = true;
+          });
+          salvarVerificacaoPendente(pendente);
+        }
         window.location.href = "/verificar-email";
         return;
       }

@@ -104,25 +104,25 @@
             <div class="col-lg-7">
                 <section class="painel p-4" aria-labelledby="tituloCartao">
                     <h2 id="tituloCartao" class="painel-titulo">Pagamento com cartão</h2>
-                    <p class="painel-subtitulo">Pagamento seguro.</p>
+                    <p class="painel-subtitulo">Simulação: não há cobrança. Use dados fictícios; os dados do cartão não são enviados nem armazenados.</p>
 
                     <form id="formularioPagamento" method="post" action="/pagamento" autocomplete="off">
                         <div class="mb-3">
                             <label for="cartaoNome" class="form-label">Nome impresso no cartão</label>
-                            <input type="text" class="form-control" id="cartaoNome" autocomplete="off" placeholder="Como está no cartão">
+                            <input type="text" class="form-control" id="cartaoNome" autocomplete="off" maxlength="60" placeholder="Como está no cartão" required>
                         </div>
                         <div class="mb-3">
                             <label for="cartaoNumero" class="form-label">Número do cartão</label>
-                            <input type="text" class="form-control" id="cartaoNumero" inputmode="numeric" autocomplete="off" placeholder="0000 0000 0000 0000">
+                            <input type="text" class="form-control" id="cartaoNumero" inputmode="numeric" autocomplete="off" maxlength="19" placeholder="0000 0000 0000 0000" required>
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-6">
                                 <label for="cartaoValidade" class="form-label">Validade</label>
-                                <input type="text" class="form-control" id="cartaoValidade" inputmode="numeric" autocomplete="off" placeholder="MM/AA">
+                                <input type="text" class="form-control" id="cartaoValidade" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="MM/AA" required>
                             </div>
                             <div class="col-6">
                                 <label for="cartaoCvv" class="form-label">Código de segurança</label>
-                                <input type="text" class="form-control" id="cartaoCvv" inputmode="numeric" autocomplete="off" placeholder="CVV">
+                                <input type="text" class="form-control" id="cartaoCvv" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="CVV" required>
                             </div>
                         </div>
 

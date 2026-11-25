@@ -28,6 +28,14 @@ async function migrarBanco() {
     ) ENGINE=InnoDB
   `);
   await database.query(`
+    CREATE TABLE IF NOT EXISTS companys (
+      id_company INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+      cnpj VARCHAR(18) NOT NULL UNIQUE,
+      nomeEmpresa VARCHAR(100) NOT NULL,
+      emailEmpresa VARCHAR(255) NOT NULL
+    ) ENGINE=InnoDB
+  `);
+  await database.query(`
     CREATE TABLE IF NOT EXISTS eventos (
       id_event INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
       nomeEvento VARCHAR(200) NOT NULL,
@@ -46,7 +54,9 @@ async function migrarBanco() {
       criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
       INDEX idx_eventos_data (dataEvento, horaEvento),
       CONSTRAINT fk_eventos_usuario FOREIGN KEY (id_user)
-        REFERENCES users(id_user) ON DELETE RESTRICT
+        REFERENCES users(id_user) ON DELETE RESTRICT,
+      CONSTRAINT fk_eventos_empresa FOREIGN KEY (id_company)
+        REFERENCES companys(id_company) ON DELETE SET NULL
     ) ENGINE=InnoDB
   `);
 
@@ -76,8 +86,11 @@ async function migrarBanco() {
     ["categoria", "VARCHAR(20) NOT NULL DEFAULT 'comunidade'"],
     ["cidade", "VARCHAR(100) NOT NULL DEFAULT 'Ipatinga'"],
     ["capa", "MEDIUMTEXT NULL"],
+    ["qtdIngresso", "INT UNSIGNED NULL"],
     ["link", "VARCHAR(255) NULL"],
     ["id_user", "INT UNSIGNED NULL"],
+    ["id_company", "INT UNSIGNED NULL"],
+    ["criado_em", "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"],
   ];
   for (const [coluna, definicao] of colunasEvento) {
     if (!(await existeColuna("eventos", coluna))) {
@@ -87,7 +100,26 @@ async function migrarBanco() {
 
   await database.query("ALTER TABLE eventos MODIFY horaEvento TIME NOT NULL");
   await database.query("ALTER TABLE eventos MODIFY link VARCHAR(255) NULL");
-  await database.query("ALTER TABLE eventos MODIFY qtdIngresso VARCHAR(255) NULL");
+  if (await existeColuna("eventos", "qtdIngresso")) {
+    const vagasInvalidas = await database.query(`
+      SELECT id_event FROM eventos
+      WHERE qtdIngresso IS NOT NULL
+        AND TRIM(CAST(qtdIngresso AS CHAR)) <> ''
+        AND (
+          TRIM(CAST(qtdIngresso AS CHAR)) NOT REGEXP '^[0-9]+$'
+          OR CAST(qtdIngresso AS DECIMAL(20, 0)) > 4294967295
+        )
+      LIMIT 1
+    `);
+    if (vagasInvalidas.length > 0) {
+      throw new Error("Há vagas inválidas em eventos; corrija-as antes de converter qtdIngresso para inteiro.");
+    }
+    await database.query(`
+      UPDATE eventos SET qtdIngresso = NULL
+      WHERE qtdIngresso IS NOT NULL AND TRIM(CAST(qtdIngresso AS CHAR)) = ''
+    `);
+    await database.query("ALTER TABLE eventos MODIFY qtdIngresso INT UNSIGNED NULL");
+  }
   if (await existeColuna("eventos", "inscricao")) {
     await database.query("ALTER TABLE eventos MODIFY inscricao VARCHAR(255) NULL");
   }

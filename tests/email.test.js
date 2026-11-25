@@ -6,6 +6,7 @@ const assert = require("node:assert/strict");
 
 const codigos = require("../app/services/codigosVerificacao");
 const servicoEmail = require("../app/services/servicoEmail");
+const config = require("../app/config");
 const esquema = require("../app/schemas/emailSchema");
 const { manipuladores } = require("../app/routers/emailRoutes");
 
@@ -89,13 +90,20 @@ test("o e-mail escapa HTML vindo dos dados", () => {
   assert.equal(html.includes("&lt;script&gt;"), true);
 });
 
-test("sem SMTP configurado e sem transporte, em desenvolvimento, não envia nem falha", async () => {
+test("sem SMTP configurado e sem transporte, informa que o e-mail não foi enviado", async () => {
+  const { username, password } = config.smtp;
+  config.smtp.username = "";
+  config.smtp.password = "";
   servicoEmail.definirTransporte(null);
-  const silencio = console.warn;
-  console.warn = () => {};
-  const resultado = await servicoEmail.enviarEmail({ para: "a@b.com", assunto: "x", texto: "y" });
-  console.warn = silencio;
-  assert.equal(resultado.simulado, true);
+  try {
+    await assert.rejects(
+      servicoEmail.enviarEmail({ para: "a@b.com", assunto: "x", texto: "y" }),
+      /SMTP não configurado/,
+    );
+  } finally {
+    config.smtp.username = username;
+    config.smtp.password = password;
+  }
 });
 
 test("rota /codigo envia o e-mail e /verificar devolve o token", async () => {
@@ -141,10 +149,30 @@ test("rota /inscricao envia a confirmação e valida o evento", async () => {
   const res = respostaFalsa();
   await manipuladores.enviarInscricao({ body: { email: "q@r.com", nome: "Maria", evento } }, res, assert.ifError);
   assert.equal(res.codigoHttp, 200);
+  assert.equal(res.corpo.enviado, true);
   assert.match(enviados[0].subject, /Inscrição confirmada: Corrida Ecológica/);
   assert.match(enviados[0].text, /R\$\s?45,00/);
 
   const invalida = respostaFalsa();
   await manipuladores.enviarInscricao({ body: { email: "q@r.com", evento: { titulo: "x" } } }, invalida, assert.ifError);
   assert.equal(invalida.codigoHttp, 400);
+});
+
+test("rota /inscricao não confirma quando o SMTP falha", async () => {
+  servicoEmail.definirTransporte({ sendMail: async () => { throw Object.assign(new Error("falha"), { code: "ESOCKET" }); } });
+  const silencio = console.error;
+  console.error = () => {};
+  try {
+    const res = respostaFalsa();
+    await manipuladores.enviarInscricao({
+      body: {
+        email: "falha@r.com",
+        evento: { titulo: "Corrida Ecológica", preco: 45 },
+      },
+    }, res, assert.ifError);
+    assert.equal(res.codigoHttp, 502);
+    assert.notEqual(res.corpo?.enviado, true);
+  } finally {
+    console.error = silencio;
+  }
 });

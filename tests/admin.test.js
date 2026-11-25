@@ -5,6 +5,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 
 const { assinarToken, verificarToken } = require("../app/services/tokensAcesso");
+const codigosVerificacao = require("../app/services/codigosVerificacao");
 const { criarUsuarioRoutes } = require("../app/routers/usuarioRoutes");
 const { criarEventoRoutes } = require("../app/routers/eventoRoutes");
 
@@ -56,6 +57,53 @@ test("login devolve token e nunca expõe o hash da senha", async (t) => {
   assert.equal(dados.usuario.tipo, "administrador");
   assert.equal("senha" in dados.usuario, false);
   assert.deepEqual(verificarToken(dados.token, segredo).id, "8");
+});
+
+test("confirma e-mail com token de cadastro sem exigir login", async (t) => {
+  const email = `confirmacao-${Date.now()}@exemplo.com`;
+  const { codigo } = codigosVerificacao.emitirCodigo(email, "cadastro");
+  const { tokenVerificacao } = codigosVerificacao.conferirCodigo(email, "cadastro", codigo);
+  const atualizacoes = [];
+  const query = async (sql, params = []) => {
+    if (sql.includes("FROM users WHERE email = ?")) {
+      assert.equal(params[0], email);
+      return [{ id: 8, emailVerificado: 0 }];
+    }
+    if (sql.includes("UPDATE users SET email_verificado = 1 WHERE id_user = ?")) {
+      atualizacoes.push(params[0]);
+      return { affectedRows: 1 };
+    }
+    throw new Error(`Consulta inesperada: ${sql}`);
+  };
+  const app = express();
+  app.use(express.json());
+  app.use("/api/usuarios", criarUsuarioRoutes({ query }));
+  const base = await iniciarServidor(t, app);
+
+  const invalida = await fetch(`${base}/api/usuarios/confirmar-email`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ tokenVerificacao: "token-invalido" }),
+  });
+  assert.equal(invalida.status, 400);
+
+  const { codigo: codigoRecuperacao } = codigosVerificacao.emitirCodigo(email, "recuperacao");
+  const { tokenVerificacao: tokenRecuperacao } = codigosVerificacao.conferirCodigo(email, "recuperacao", codigoRecuperacao);
+  const tokenDeOutraFinalidade = await fetch(`${base}/api/usuarios/confirmar-email`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ tokenVerificacao: tokenRecuperacao }),
+  });
+  assert.equal(tokenDeOutraFinalidade.status, 400);
+
+  const confirmada = await fetch(`${base}/api/usuarios/confirmar-email`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ tokenVerificacao }),
+  });
+  assert.equal(confirmada.status, 200);
+  assert.deepEqual(await confirmada.json(), { ok: true });
+  assert.deepEqual(atualizacoes, [8]);
 });
 
 test("somente administrador autenticado pode publicar evento", async (t) => {

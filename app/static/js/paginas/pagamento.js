@@ -3,6 +3,7 @@
 import { concluirInscricao } from "../fluxoInscricao.js";
 import { eventoJaAconteceu, formatarDataHora, formatarPreco } from "../formatacao.js";
 import { definirCarregando, iniciarPagina, mostrarAlerta } from "../interface.js";
+import { aplicarMascara, formatarCvv, formatarNumeroCartao, formatarValidadeCartao } from "../mascaras.js";
 import { buscarEvento } from "../servicoEventos.js";
 
 const { continuar, usuario } = iniciarPagina({ exigir: "logado" });
@@ -32,6 +33,10 @@ async function iniciar(usuario) {
   $("pagamentoValor").textContent = formatarPreco(evento.preco);
   $("pagamentoTotal").textContent = formatarPreco(evento.preco);
   $("botaoPagarValor").textContent = formatarPreco(evento.preco);
+
+  aplicarMascara($("cartaoNumero"), formatarNumeroCartao);
+  aplicarMascara($("cartaoValidade"), formatarValidadeCartao);
+  aplicarMascara($("cartaoCvv"), formatarCvv);
 
   $("formularioPagamento").addEventListener("submit", async (e) => {
     e.preventDefault();

@@ -19,15 +19,12 @@ export async function iniciarInscricao(evento) {
   await concluirInscricao(evento, usuario);
 }
 
-// Registra a inscrição, envia o e-mail e abre a tela de confirmação.
-// Se só o e-mail falhar, a inscrição continua valendo e a tela de confirmação avisa.
+// Registra a inscrição, confirma o envio do e-mail e só então abre a tela de confirmação.
 export async function concluirInscricao(evento, usuario) {
   await registrarInscricao(evento.id, usuario.id);
-  let emailEnviado = true;
-  try {
-    await enviarEmailInscricao({ email: usuario.email, nome: usuario.nome, evento });
-  } catch {
-    emailEnviado = false;
+  const resultado = await enviarEmailInscricao({ email: usuario.email, nome: usuario.nome, evento });
+  if (!resultado?.enviado) {
+    throw new Error("Sua inscrição foi registrada, mas o e-mail de confirmação não foi enviado. Tente novamente.");
   }
-  window.location.href = `/inscricao-confirmada?evento=${encodeURIComponent(evento.id)}&email=${emailEnviado ? 1 : 0}`;
+  window.location.href = `/inscricao-confirmada?evento=${encodeURIComponent(evento.id)}&email=1`;
 }

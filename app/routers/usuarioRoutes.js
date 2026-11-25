@@ -67,6 +67,30 @@ function criarUsuarioRoutes({ query = database.query, segredo = obterSegredo() }
     }
   });
 
+  router.post("/confirmar-email", async (req, res, next) => {
+    const dadosToken = verificarTokenDeCodigo(req.body?.tokenVerificacao);
+    if (!dadosToken || dadosToken.finalidade !== "cadastro") {
+      return res.status(400).json({ mensagem: "Token de confirmação inválido." });
+    }
+
+    try {
+      const usuarios = await query(
+        "SELECT id_user AS id, email_verificado AS emailVerificado FROM users WHERE email = ?",
+        [dadosToken.email],
+      );
+      const usuario = usuarios[0];
+      if (!usuario) {
+        return res.status(404).json({ mensagem: "Usuário não encontrado." });
+      }
+      if (Number(usuario.emailVerificado) !== 1) {
+        await query("UPDATE users SET email_verificado = 1 WHERE id_user = ?", [usuario.id]);
+      }
+      return res.json({ ok: true });
+    } catch (error) {
+      return next(error);
+    }
+  });
+
   router.get("/me", exigirUsuario, (req, res) => res.json({ usuario: req.usuario }));
 
   router.post("/", async (req, res, next) => {

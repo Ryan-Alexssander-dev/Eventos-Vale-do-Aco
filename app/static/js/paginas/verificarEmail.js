@@ -3,7 +3,7 @@
 import { definirCarregando, esconderAlerta, iniciarPagina, mostrarAlerta } from "../interface.js";
 import { mascararEmail } from "../formatacao.js";
 import { enviarCodigoVerificacao, verificarCodigo } from "../servicoEmail.js";
-import { buscarUsuarioPorEmail, confirmarEmail } from "../servicoUsuarios.js";
+import { confirmarEmail } from "../servicoUsuarios.js";
 import { limparVerificacaoPendente, obterVerificacaoPendente, salvarVerificacaoPendente } from "../sessao.js";
 import { validarCodigo } from "../validacoes.js";
 
@@ -44,11 +44,19 @@ function iniciar() {
 
   caixas.forEach((caixa, indice) => {
     caixa.addEventListener("input", () => {
-      caixa.value = caixa.value.replace(/\D/g, "").slice(-1);
-      mostrarErro("");
-      if (caixa.value && caixas[indice + 1]) {
-        caixas[indice + 1].focus();
+      const digitos = caixa.value.replace(/\D/g, "");
+      if (digitos.length > 1) {
+        [...digitos.slice(0, caixas.length - indice)].forEach((digito, deslocamento) => {
+          caixas[indice + deslocamento].value = digito;
+        });
+        caixas[Math.min(indice + digitos.length, caixas.length - 1)].focus();
+      } else {
+        caixa.value = digitos.slice(-1);
+        if (caixa.value && caixas[indice + 1]) {
+          caixas[indice + 1].focus();
+        }
       }
+      mostrarErro("");
     });
     caixa.addEventListener("keydown", (e) => {
       if (e.key === "Backspace" && !caixa.value && caixas[indice - 1]) {
@@ -133,8 +141,7 @@ function iniciar() {
         return;
       }
 
-      const idUsuario = pendente.idUsuario ?? (await buscarUsuarioPorEmail(pendente.email))?.id;
-      await confirmarEmail(idUsuario, tokenVerificacao);
+      await confirmarEmail(pendente.email, tokenVerificacao);
       limparVerificacaoPendente();
       window.location.href = "/login?verificado=1";
     } catch (erro) {
