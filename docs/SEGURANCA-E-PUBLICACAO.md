@@ -94,7 +94,7 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
 
 ## 6. Produção
 
-- Para o Render, conecte o repositório usando o Blueprint `render.yaml`. Ele configura `npm ci`, `npm start`, `/health`, Node 24.x e `HOST=0.0.0.0`; as variáveis marcadas `sync: false` devem ser preenchidas no painel do serviço. `SECRET_KEY` é gerada pelo Blueprint.
+- Para o Render, conecte o repositório usando o Blueprint `render.yaml`. Ele configura `npm ci`, `npm start`, `/health`, Node 24.22.3 e `HOST=0.0.0.0`; as variáveis marcadas `sync: false` devem ser preenchidas no painel do serviço. `SECRET_KEY` é gerada pelo Blueprint.
 - O Render não cria um banco MySQL nesse Blueprint. Configure um MySQL externo com acesso seguro a partir do Render e TLS (`MYSQL_SSL=true`) se suportado pelo provedor. `MYSQL_HOST` não pode ser `localhost`/loopback em produção. Para um banco novo, não é necessário importar `VDA-Eventos.sql`: rode `npm run migrate-db` uma vez para criar/atualizar as tabelas no banco já provisionado pelo provedor. Não rode migrações destrutivas automaticamente a cada deploy.
 - Defina as variáveis **no painel da hospedagem** (não suba `.env`): `NODE_ENV=production`, `SECRET_KEY`, `MYSQL_*` (incluindo `MYSQL_CONNECTION_LIMIT`; o Blueprint gratuito define `2`), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_BUCKET_EVENTOS` (padrão `event-covers`), `SMTP_*` (senha de app do Google). `PORT` é fornecida pelo Render; o Blueprint define `HOST=0.0.0.0`.
 - **HTTPS obrigatório** (a maioria das plataformas fornece). O cookie `secure` e o `trust proxy` do `main.js` dependem disso.

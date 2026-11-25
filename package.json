@@ -44,5 +44,8 @@
   "bugs": {
     "url": "https://github.com/Ryan-Alexssander-dev/Eventos-Vale-do-A-o/issues"
   },
-  "homepage": "https://github.com/Ryan-Alexssander-dev/Eventos-Vale-do-A-o#readme"
+  "homepage": "https://github.com/Ryan-Alexssander-dev/Eventos-Vale-do-A-o#readme",
+  "devDependencies": {
+    "prisma": "^6.19.3"
+  }
 }

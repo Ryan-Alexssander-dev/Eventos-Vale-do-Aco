@@ -25,7 +25,7 @@ npm run dev               # http://127.0.0.1:3000
 npm test                  # testes automatizados
 ```
 
-Requer Node.js 24.x. Consulte [`docs/GUIA-DO-FRONT-END.md`](docs/GUIA-DO-FRONT-END.md) para a organização do front-end.
+Requer Node.js 24.22.3 (versão definida em `.node-version`, `.nvmrc` e no Blueprint do Render). Consulte [`docs/GUIA-DO-FRONT-END.md`](docs/GUIA-DO-FRONT-END.md) para a organização do front-end.
 
 Para criar o primeiro administrador, preencha `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env`.
 A senha deve ter ao menos 12 caracteres. Execute `npm run criar:admin` uma única vez e depois remova
