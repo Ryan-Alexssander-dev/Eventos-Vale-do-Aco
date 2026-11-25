@@ -19,6 +19,7 @@
     "test": "node --test tests/email.test.js tests/admin.test.js"
   },
   "dependencies": {
+    "@supabase/server": "^1.9.2",
     "bcrypt": "^6.0.0",
     "compression": "^1.8.0",
     "cors": "^2.8.6",
