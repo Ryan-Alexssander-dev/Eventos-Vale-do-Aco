@@ -1,12 +1,7 @@
-// Configuração do front-end. É o ÚNICO lugar para ajustar quando as rotas do back-end ficarem prontas.
+// Configuração do front-end.
 // Itens marcados com "AJUSTAR" são suposições genéricas.
 
 export const configuracao = {
-  // Use dados persistidos pela API; o modo simulado é apenas para demonstrações locais.
-  // Com true, usuários, eventos, eventos salvos e inscrições ficam no navegador (localStorage).
-  // As rotas de e-mail (/api/email) são sempre reais.
-  usarDadosSimulados: false,
-
   // AJUSTAR: endereço base da API. "" = mesmo servidor do site.
   baseApi: "",
 

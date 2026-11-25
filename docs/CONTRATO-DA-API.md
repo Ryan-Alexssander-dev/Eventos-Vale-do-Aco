@@ -71,7 +71,9 @@ autenticado**, não confiar nesses campos. Tokens são assinados com `SECRET_KEY
 horas e o perfil é relido do banco em cada operação protegida.
 
 As imagens enviadas no campo `capa` aceitam PNG, JPEG ou WebP, com assinatura validada e limite de
-2 MB. O arquivo fica armazenado como data URL na coluna `eventos.capa`.
+2 MB. O servidor envia o arquivo ao bucket público `event-covers` no Supabase Storage e grava a URL
+pública retornada na coluna `eventos.capa`. Ao substituir ou excluir um evento, a imagem anterior
+do bucket também é removida.
 
 ## Rotas de e-mail (já implementadas neste projeto) — `/api/email`
 
@@ -100,10 +102,14 @@ por esse comando. Rode `npm run migrate-db` para atualizar um banco já existent
 
 ## Banco de dados
 
-`VDA-Eventos.sql` cria o esquema completo: usuários e suas preferências, empresas, eventos (incluindo capas),
+`VDA-Eventos.sql` cria o esquema completo: usuários e suas preferências, empresas, eventos (incluindo URLs de capas),
 eventos salvos e inscrições, com chaves estrangeiras e índices. Para atualizar um banco existente sem apagar
 registros, rode `npm run migrate-db`; a migração interrompe a conversão de `qtdIngresso` se encontrar valores
 que não sejam capacidades inteiras válidas.
+
+Configure `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` no servidor, e crie no projeto Supabase o bucket público
+`event-covers` (ou configure o nome em `SUPABASE_BUCKET_EVENTOS`). A chave de serviço nunca deve ser enviada
+ao navegador. O projeto/bucket também precisa permitir imagens PNG, JPEG e WebP de até 2 MB.
 
 A tabela `eventos` associa o publicador pelo `id_user` e, quando aplicável, a empresa pelo `id_company`.
 Como não há cadastro de empresas na primeira entrega, todo evento terá `publicador.tipo = "administrador"`.

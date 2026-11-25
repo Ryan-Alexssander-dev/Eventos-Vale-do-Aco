@@ -14,6 +14,7 @@ const multer = require("multer");
 const database = require("../database");
 const { criarAutenticacao } = require("../middlewares/autenticacao");
 const { obterSegredo } = require("../services/tokensAcesso");
+const armazenamentoSupabase = require("../services/armazenamentoSupabase");
 
 const CIDADES = new Set(["Coronel Fabriciano", "Ipatinga", "Timóteo"]);
 const CATEGORIAS = new Set(["musica", "esportes", "gastronomia", "teatro", "feiras", "comunidade"]);
@@ -29,23 +30,23 @@ const SQL_EVENTO = `
   FROM eventos e LEFT JOIN users u ON u.id_user = e.id_user
 `;
 
-function decodificarCapa(arquivo) {
+function detectarTipoCapa(arquivo) {
   const buffer = arquivo.buffer;
   if (
     buffer.length >= 8 &&
     buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
   ) {
-    return `data:image/png;base64,${buffer.toString("base64")}`;
+    return "image/png";
   }
   if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
-    return `data:image/jpeg;base64,${buffer.toString("base64")}`;
+    return "image/jpeg";
   }
   if (
     buffer.length >= 12 &&
     buffer.toString("ascii", 0, 4) === "RIFF" &&
     buffer.toString("ascii", 8, 12) === "WEBP"
   ) {
-    return `data:image/webp;base64,${buffer.toString("base64")}`;
+    return "image/webp";
   }
   return null;
 }
@@ -78,7 +79,7 @@ function validarEvento(corpo, atual, arquivo) {
     .toISOString().startsWith(data);
   const horaPartes = hora.match(/^([01]\d|2[0-3]):([0-5]\d)$/);
   const capaExistente = valorDoCorpo(corpo, ["capa"], atual?.capa) ?? null;
-  const capa = arquivo ? decodificarCapa(arquivo) : capaExistente;
+  const tipoCapa = arquivo ? detectarTipoCapa(arquivo) : null;
 
   if (
     !titulo || titulo.length > 200 ||
@@ -91,12 +92,12 @@ function validarEvento(corpo, atual, arquivo) {
     (vagas !== null && (!Number.isInteger(vagas) || vagas < 0)) ||
     (link !== "" && link.length > 255) ||
     (link !== "" && !/^https?:\/\//i.test(link)) ||
-    (arquivo && !capa) ||
-    (!arquivo && capa && !/^https?:\/\//i.test(capa) && !/^data:image\/(?:png|jpeg|webp);base64,/i.test(capa))
+    (arquivo && !tipoCapa) ||
+    (!arquivo && capaExistente && !/^https?:\/\//i.test(capaExistente) && !/^data:image\/(?:png|jpeg|webp);base64,/i.test(capaExistente))
   ) {
     return null;
   }
-  return { titulo, categoria, descricao, data, hora, cidade, local, preco, vagas, link: link || null, capa };
+  return { titulo, categoria, descricao, data, hora, cidade, local, preco, vagas, link: link || null, capa: capaExistente, tipoCapa };
 }
 
 function processarCapa(req, res, next) {
@@ -133,13 +134,25 @@ function eventoPublico(linha) {
   };
 }
 
-function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } = {}) {
+function criarEventoRoutes({
+  query = database.query,
+  segredo = obterSegredo(),
+  armazenamento = armazenamentoSupabase,
+} = {}) {
   const router = express.Router();
   const { exigirUsuario, exigirAdministrador } = criarAutenticacao({ query, segredo });
 
   async function buscarPorId(id) {
     const linhas = await query(`${SQL_EVENTO} WHERE e.id_event = ?`, [id]);
     return linhas[0] ? eventoPublico(linhas[0]) : null;
+  }
+
+  async function limparCapa(url) {
+    try {
+      await armazenamento.removerCapa(url);
+    } catch (error) {
+      console.error(`[aviso] Não foi possível remover uma imagem de capa: ${error.message}`);
+    }
   }
 
   router.get("/", async (_req, res, next) => {
@@ -170,7 +183,14 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
     if (!evento) {
       return res.status(400).json({ mensagem: "Confira os dados do evento e da imagem de capa." });
     }
+    let capaEnviada;
+    let capaPersistida = false;
     try {
+      let capa = evento.capa;
+      if (req.file) {
+        capa = await armazenamento.subirCapa(req.file, evento.tipoCapa);
+        capaEnviada = capa;
+      }
       const resultado = await query(
         `INSERT INTO eventos
           (nomeEvento, categoria, descricao, dataEvento, horaEvento, cidade, endereco,
@@ -178,13 +198,17 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           evento.titulo, evento.categoria, evento.descricao, evento.data, evento.hora,
-          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, evento.capa,
+          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, capa,
           req.usuario.id,
         ],
       );
+      capaPersistida = true;
       const criado = await buscarPorId(resultado.insertId);
       return res.status(201).json({ evento: criado });
     } catch (error) {
+      if (capaEnviada && !capaPersistida) {
+        await limparCapa(capaEnviada);
+      }
       return next(error);
     }
   });
@@ -193,6 +217,8 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
     if (!/^[1-9]\d*$/.test(req.params.id)) {
       return res.status(400).json({ mensagem: "Informe um ID de evento válido." });
     }
+    let capaEnviada;
+    let capaPersistida = false;
     try {
       const atual = await buscarPorId(req.params.id);
       if (!atual) {
@@ -202,18 +228,30 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
       if (!evento) {
         return res.status(400).json({ mensagem: "Confira os dados do evento e da imagem de capa." });
       }
+      let capa = evento.capa;
+      if (req.file) {
+        capa = await armazenamento.subirCapa(req.file, evento.tipoCapa);
+        capaEnviada = capa;
+      }
       await query(
         `UPDATE eventos SET nomeEvento = ?, categoria = ?, descricao = ?, dataEvento = ?,
           horaEvento = ?, cidade = ?, endereco = ?, precoIngresso = ?, qtdIngresso = ?,
           link = ?, capa = ? WHERE id_event = ?`,
         [
           evento.titulo, evento.categoria, evento.descricao, evento.data, evento.hora,
-          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, evento.capa,
+          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, capa,
           req.params.id,
         ],
       );
+      capaPersistida = true;
+      if (req.file && atual.capa !== capa) {
+        await limparCapa(atual.capa);
+      }
       return res.json({ evento: await buscarPorId(req.params.id) });
     } catch (error) {
+      if (capaEnviada && !capaPersistida) {
+        await limparCapa(capaEnviada);
+      }
       return next(error);
     }
   });
@@ -222,6 +260,8 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
     if (!/^[1-9]\d*$/.test(req.params.id)) {
       return res.status(400).json({ mensagem: "Informe um ID de evento válido." });
     }
+    let capaEnviada;
+    let capaPersistida = false;
     try {
       const atual = await buscarPorId(req.params.id);
       if (!atual) {
@@ -231,18 +271,30 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
       if (!evento) {
         return res.status(400).json({ mensagem: "Confira os dados do evento e da imagem de capa." });
       }
+      let capa = evento.capa;
+      if (req.file) {
+        capa = await armazenamento.subirCapa(req.file, evento.tipoCapa);
+        capaEnviada = capa;
+      }
       await query(
         `UPDATE eventos SET nomeEvento = ?, categoria = ?, descricao = ?, dataEvento = ?,
           horaEvento = ?, cidade = ?, endereco = ?, precoIngresso = ?, qtdIngresso = ?,
           link = ?, capa = ? WHERE id_event = ?`,
         [
           evento.titulo, evento.categoria, evento.descricao, evento.data, evento.hora,
-          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, evento.capa,
+          evento.cidade, evento.local, evento.preco, evento.vagas, evento.link, capa,
           req.params.id,
         ],
       );
+      capaPersistida = true;
+      if (req.file && atual.capa !== capa) {
+        await limparCapa(atual.capa);
+      }
       return res.json({ evento: await buscarPorId(req.params.id) });
     } catch (error) {
+      if (capaEnviada && !capaPersistida) {
+        await limparCapa(capaEnviada);
+      }
       return next(error);
     }
   });
@@ -252,10 +304,15 @@ function criarEventoRoutes({ query = database.query, segredo = obterSegredo() } 
       return res.status(400).json({ mensagem: "Informe um ID de evento válido." });
     }
     try {
+      const atual = await buscarPorId(req.params.id);
+      if (!atual) {
+        return res.status(404).json({ mensagem: "Evento não encontrado." });
+      }
       const resultado = await query("DELETE FROM eventos WHERE id_event = ?", [req.params.id]);
       if (resultado.affectedRows === 0) {
         return res.status(404).json({ mensagem: "Evento não encontrado." });
       }
+      await limparCapa(atual.capa);
       return res.status(204).end();
     } catch (error) {
       return next(error);

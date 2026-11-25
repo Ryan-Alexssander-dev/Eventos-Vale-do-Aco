@@ -13,6 +13,10 @@ const { paginas, email, usuario, evento } = require("./routers");
 const TEMPLATES = path.join(__dirname, "templates");
 function createApp() {
   const app = express();
+  const fontesImagem = ["'self'", "data:", "blob:"];
+  if (config.supabase.url) {
+    fontesImagem.push(new URL(config.supabase.url).origin);
+  }
 
   app.disable("x-powered-by");
   app.use(compression()); // respostas menores = páginas mais rápidas
@@ -32,7 +36,7 @@ function createApp() {
           "script-src": ["'self'", "https://cdn.jsdelivr.net"],
           "style-src": ["'self'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
           "font-src": ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
-          "img-src": ["'self'", "data:", "blob:"],
+          "img-src": fontesImagem,
           "connect-src": ["'self'"],
           "object-src": ["'none'"],
           "base-uri": ["'self'"],

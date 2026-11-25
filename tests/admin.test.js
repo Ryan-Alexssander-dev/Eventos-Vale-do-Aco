@@ -224,3 +224,72 @@ test("somente administrador autenticado pode publicar evento", async (t) => {
   });
   assert.equal(removido.status, 204);
 });
+
+test("upload de capa armazena no Supabase e grava a URL no evento", async (t) => {
+  const segredo = "chave-de-teste-com-tamanho-suficiente";
+  const urlCapa = "https://projeto.supabase.co/storage/v1/object/public/event-covers/eventos/capa.png";
+  let evento;
+  let arquivoEnviado;
+  const query = async (sql, params = []) => {
+    if (sql.includes("FROM users WHERE id_user = ?")) {
+      return [{
+        id: params[0], nome: "Admin", email: "admin@exemplo.com", tipo: "administrador",
+        avatar: null, emailVerificado: 1,
+      }];
+    }
+    if (sql.includes("FROM eventos e LEFT JOIN users u")) {
+      return evento ? [evento] : [];
+    }
+    if (sql.includes("INSERT INTO eventos")) {
+      assert.equal(params[10], urlCapa);
+      evento = {
+        id: 21, titulo: params[0], categoria: params[1], descricao: params[2],
+        data: params[3], hora: params[4], cidade: params[5], local: params[6],
+        preco: params[7], vagas: params[8], link: params[9], capa: params[10],
+        publicadorTipo: "administrador", publicadorNome: "Admin", publicadorAvatar: null,
+      };
+      return { insertId: 21 };
+    }
+    throw new Error(`Consulta inesperada: ${sql}`);
+  };
+  const armazenamento = {
+    async subirCapa(arquivo, tipo) {
+      arquivoEnviado = { buffer: arquivo.buffer, tipo };
+      return urlCapa;
+    },
+    async removerCapa() {},
+  };
+  const app = express();
+  app.use(express.json());
+  app.use("/api/eventos", criarEventoRoutes({ query, segredo, armazenamento }));
+  const base = await iniciarServidor(t, app);
+  const formulario = new FormData();
+  for (const [campo, valor] of Object.entries({
+    titulo: "Evento com capa",
+    categoria: "musica",
+    descricao: "Descrição do evento",
+    data: "2099-05-10",
+    hora: "19:30",
+    cidade: "Ipatinga",
+    local: "Parque Ipanema",
+    preco: "0",
+  })) {
+    formulario.append(campo, valor);
+  }
+  formulario.append(
+    "capa",
+    new Blob([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])], { type: "image/png" }),
+    "capa.png",
+  );
+
+  const resposta = await fetch(`${base}/api/eventos`, {
+    method: "POST",
+    headers: { authorization: `Bearer ${assinarToken({ id: "1" }, segredo)}` },
+    body: formulario,
+  });
+  const dados = await resposta.json();
+  assert.equal(resposta.status, 201);
+  assert.equal(arquivoEnviado.tipo, "image/png");
+  assert.equal(dados.evento.capa, urlCapa);
+  assert.equal(evento.capa, urlCapa);
+});

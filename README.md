@@ -5,8 +5,8 @@ participantes se cadastram (com e-mail verificado por código), **salvam** event
 — eventos gratuitos na hora, eventos pagos por uma tela de pagamento. O cadastro de empresas aparece na interface,
 mas está desativado na primeira entrega.
 
-> Projeto Integrador Senac. O front-end está completo e funciona com dados simulados enquanto as rotas de usuários
-> e eventos (CRUD) não ficam prontas. As rotas de e-mail já funcionam (SMTP do Google).
+> Projeto Integrador Senac. O front-end usa a API do projeto para contas e eventos; capas são armazenadas no Supabase
+> e os dados principais no MySQL. As rotas de e-mail usam SMTP.
 
 ## Tecnologias
 
@@ -25,7 +25,7 @@ npm run dev               # http://127.0.0.1:3000
 npm test                  # testes automatizados
 ```
 
-Requer Node.js 20 ou superior. Contas de teste do modo simulado e detalhes: [`docs/GUIA-DO-FRONT-END.md`](docs/GUIA-DO-FRONT-END.md).
+Requer Node.js 24.x. Consulte [`docs/GUIA-DO-FRONT-END.md`](docs/GUIA-DO-FRONT-END.md) para a organização do front-end.
 
 Para criar o primeiro administrador, preencha `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` no `.env`.
 A senha deve ter ao menos 12 caracteres. Execute `npm run criar:admin` uma única vez e depois remova
@@ -45,10 +45,9 @@ EventosVDA/
 │   ├── config.js           # lê o .env (único arquivo que faz isso)
 │   ├── database.js         # pool de conexões MySQL
 │   ├── routers/            # páginas, e-mail (pronto) e CRUD de usuários/eventos (equipe de back-end)
-│   ├── services/           # envio de e-mail (SMTP do Google) e códigos de verificação
-│   ├── schemas/            # validação dos dados recebidos
+│   ├── services/           # e-mail, códigos de verificação e armazenamento de capas
+│   ├── schemas/            # validação de e-mail
 │   ├── middlewares/        # limite de requisições
-│   ├── models/             # acesso ao banco (a implementar)
 │   ├── templates/          # telas HTML (Bootstrap)
 │   └── static/             # css/, js/ (módulos) e img/ (inclui os avatares de animais)
 ├── tests/                  # testes automatizados (node:test)

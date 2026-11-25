@@ -16,7 +16,7 @@ function getPool() {
       password: config.mysql.password,
       charset: "utf8mb4",
       waitForConnections: true,
-      connectionLimit: 10,
+      connectionLimit: config.mysql.connectionLimit,
       queueLimit: 0,
       multipleStatements: false,
       ssl: config.mysql.ssl ? { rejectUnauthorized: true } : undefined,

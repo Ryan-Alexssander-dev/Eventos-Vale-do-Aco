@@ -72,7 +72,7 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
 - Só `/static` é público; as telas são entregues por uma lista fixa de rotas.
 - Texto vindo de usuários entra nas telas por `textContent`/`criarElemento`, nunca por `innerHTML` (sem XSS); links só `http(s)`; `?proximo=` aceita apenas caminhos internos.
 - E-mails: código de 6 dígitos com validade de 10 min, 5 tentativas, uso único, hash em memória, reenvio com intervalo, limite por IP e por destinatário; conteúdo escapado; quebras de linha removidas dos campos (sem injeção de cabeçalho).
-- Senha do SMTP só no `.env` (senha de app do Google); nada de e-mail ou código nos logs em produção.
+- Segredos de SMTP (senha de app do Google) e do Supabase somente no `.env` local ignorado ou no painel seguro da hospedagem; nada de e-mail ou código nos logs em produção.
 - Dados do cartão na tela de pagamento nunca são lidos nem enviados.
 - Corpos de requisição limitados a 100 KB; `x-powered-by` desligado; erros em produção sem detalhes técnicos; respostas comprimidas.
 - Consultas ao banco com `?` (prepared statements) e `multipleStatements: false`.
@@ -80,8 +80,6 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
 
 ## 5. O que ainda depende de você / da equipe da API
 
-- O modo simulado está desligado por padrão (`usarDadosSimulados: false` em `app/static/js/configuracao.js`).
-  Não o ligue em produção: ele inclui contas de teste e guarda tudo no navegador.
 - **Autorização só vale na API.** As telas protegem apenas a navegação; qualquer pessoa pode chamar a API direto.
   Veja a lista em `docs/CONTRATO-DA-API.md` (permissões de administrador, dono dos dados, bcrypt, validações, `tokenVerificacao`).
 - **Sessão sem cookie:** o usuário logado fica no armazenamento do navegador (e o `token`, se houver). Isso o deixa exposto a
@@ -91,16 +89,20 @@ pois clones e forks mantêm o histórico; (2) só depois limpe o histórico, se 
   Mantenha os limites e, se possível, exija token do usuário logado na rota `/inscricao`.
 - **CSRF:** sem cookie de sessão não há CSRF clássico; se a API passar a usar cookies, adicione `SameSite` e verificação de `Origin`.
 - **Limite de tentativas de login** (`express-rate-limit` ou similar) na API.
-- **Uploads de capa:** a API aceita PNG/JPEG/WebP com assinatura validada e limite de 2 MB; reprocessar a imagem continua recomendado antes de produção.
+- **Uploads de capa:** a API aceita PNG/JPEG/WebP com assinatura validada e limite de 2 MB; reprocessar a imagem continua recomendado antes de produção. Os arquivos ficam em um bucket público do Supabase Storage; mantenha a chave `SUPABASE_SERVICE_ROLE_KEY` somente no servidor.
 - **Logs:** não registrar senhas, tokens, códigos nem corpo das requisições.
 
 ## 6. Produção
 
-- Defina as variáveis **no painel da hospedagem** (não suba `.env`): `NODE_ENV=production`, `SECRET_KEY`, `MYSQL_*`, `MYSQL_SSL=true` se o provedor exigir, `SMTP_*` (senha de app do Google), `PORT`/`HOST` conforme a plataforma.
+- Para o Render, conecte o repositório usando o Blueprint `render.yaml`. Ele configura `npm ci`, `npm start`, `/health`, Node 24.x e `HOST=0.0.0.0`; as variáveis marcadas `sync: false` devem ser preenchidas no painel do serviço. `SECRET_KEY` é gerada pelo Blueprint.
+- O Render não cria um banco MySQL nesse Blueprint. Configure um MySQL externo com acesso seguro a partir do Render e TLS (`MYSQL_SSL=true`) se suportado pelo provedor. `MYSQL_HOST` não pode ser `localhost`/loopback em produção. Para um banco novo, não é necessário importar `VDA-Eventos.sql`: rode `npm run migrate-db` uma vez para criar/atualizar as tabelas no banco já provisionado pelo provedor. Não rode migrações destrutivas automaticamente a cada deploy.
+- Defina as variáveis **no painel da hospedagem** (não suba `.env`): `NODE_ENV=production`, `SECRET_KEY`, `MYSQL_*` (incluindo `MYSQL_CONNECTION_LIMIT`; o Blueprint gratuito define `2`), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_BUCKET_EVENTOS` (padrão `event-covers`), `SMTP_*` (senha de app do Google). `PORT` é fornecida pelo Render; o Blueprint define `HOST=0.0.0.0`.
 - **HTTPS obrigatório** (a maioria das plataformas fornece). O cookie `secure` e o `trust proxy` do `main.js` dependem disso.
 - **Banco de dados:** usuário exclusivo da aplicação com privilégios mínimos (nada de `root`), sem acesso público pela internet, backups automáticos testados.
+- O MySQL DEV gratuito da Clever Cloud é indicado para testes, não para produção: não oferece backups/SLA e a documentação atualmente lista uma versão MySQL 8.0.46 fora de suporte. Para uma demonstração, limite o pool com `MYSQL_CONNECTION_LIMIT=2`; para produção real, use um plano/provedor com versão suportada e backups.
 - Instale com `npm ci --omit=dev` (usa o `package-lock.json` exato) e rode `npm start`. Atualize dependências com frequência.
-- **Uploads** em disco persistente ou armazenamento de objetos (disco de hospedagens costuma ser apagado a cada deploy).
+- **Render:** o Blueprint usa o plano Free solicitado. Ele pode dormir após inatividade, levar cerca de um minuto para voltar e tem limites de uso; não é recomendado para disponibilidade contínua. Confira limites e eventual cobrança por uso adicional. Este app envia capas ao Supabase; não depende de disco persistente para uploads.
+- **Administrador inicial:** o Render Free não oferece Shell/SSH. Depois de provisionar o banco e executar `npm run migrate-db`, rode `npm run criar:admin` no terminal local, na pasta do projeto, com o `.env` apontando temporariamente para o MySQL remoto e `ADMIN_NAME`, `ADMIN_EMAIL` e `ADMIN_PASSWORD` preenchidos. A máquina local precisa conseguir conectar ao banco. O script grava a senha em hash; remova `ADMIN_PASSWORD` do `.env` logo depois. Não é necessário que o site já esteja publicado para criar a conta.
 - Monitore o endpoint `/health` e os logs de erro.
 
 ## 7. LGPD (o sistema coleta dados pessoais)

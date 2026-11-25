@@ -1,25 +1,17 @@
 # Guia do front-end
 
-O front-end está **completo**: telas, validações, cookies, fluxo de inscrição e consumo da API.
-Este guia explica como ele está organizado e como ligá-lo à API real quando ela existir.
+O front-end inclui telas, validações, cookies, fluxo de inscrição e integração com a API do projeto.
+Este guia explica sua organização e os pontos de configuração da API.
 
 ## 1. Como rodar
 
 ```bash
 npm install
-cp .env.example .env     # preencha o .env (SMTP é opcional para ver as telas)
+cp .env.example .env     # configure MySQL e SMTP para os fluxos correspondentes
+npm run migrate-db
 npm run dev              # http://127.0.0.1:3000
 npm test                 # testes das rotas de e-mail
 ```
-
-Por padrão o front usa **dados simulados** (guardados no navegador), então tudo funciona sem a API:
-
-| Conta de teste | E-mail | Senha |
-|---|---|---|
-| Administrador | `admin@exemplo.com` | `Admin@123` |
-| Participante | `maria@exemplo.com` | `Senha@123` |
-
-> Essas contas existem **só no modo simulado**. Ele precisa estar desligado em produção (seção 3).
 
 Sem SMTP configurado, em desenvolvimento, o **código de verificação aparece no console do servidor**
 (`npm run dev`) em vez de ser enviado por e-mail.
@@ -30,13 +22,12 @@ Nomes em pt-BR e camelCase. Cada arquivo faz uma coisa:
 
 | Arquivo | Para que serve |
 |---|---|
-| `configuracao.js` | **Único** lugar para ajustar: caminhos da API, modo simulado, cidades, categorias |
+| `configuracao.js` | **Único** lugar para ajustar: caminhos da API, cidades e categorias |
 | `api.js` | `requisitar(caminho, opcoes)`: fetch genérico (recebe o caminho como argumento) |
 | `servicoUsuarios.js` | CRUD de usuários, login, senha, eventos salvos |
 | `servicoEventos.js` | CRUD de eventos e inscrições |
 | `servicoEmail.js` | Código de verificação e e-mail de inscrição (rotas deste projeto) |
 | `normalizadores.js` | Converte o formato da API para o do front (aceita `nomeEvento`/`titulo` etc.) |
-| `simulacao/dadosSimulados.js` | Implementa os serviços no navegador (modo simulado) |
 | `sessao.js` | Usuário logado, redirecionamentos, `proximo` seguro |
 | `validacoes.js`, `mascaras.js` | Regras de validação e máscaras (CNPJ) |
 | `cookies.js`, `consentimento.js`, `preferencias.js` | Cookies e consentimento (LGPD) |
@@ -48,16 +39,15 @@ Nomes em pt-BR e camelCase. Cada arquivo faz uma coisa:
 Classes CSS próprias e ids do HTML também estão em pt-BR (`cartao-evento`, `gradeEventos`...).
 O que vem do Bootstrap, do navegador (`addEventListener`, `classList`) e do JavaScript continua em inglês.
 
-## 3. Ligando a API real
+## 3. Configuração da API
 
-1. Em `configuracao.js`: `usarDadosSimulados: false`.
-2. Ajuste `caminhos` (e `metodoAtualizacao`, `baseApi`) conforme as rotas da equipe.
-3. Se os campos da API tiverem outros nomes, ajuste **somente** `normalizadores.js`
+O front-end já está configurado para usar as rotas deste projeto. Se a API for hospedada em outro domínio,
+configure `baseApi` em `configuracao.js`; se os caminhos ou métodos mudarem, ajuste `caminhos` e
+`metodoAtualizacao`. Se os campos da API tiverem outros nomes, ajuste **somente** `normalizadores.js`
    (`normalizarEvento`, `normalizarUsuario`, `eventoParaApi`).
-4. Se o login devolver um `token`, o front o guarda e envia em `Authorization: Bearer ...` automaticamente.
+O token devolvido no login é guardado e enviado em `Authorization: Bearer ...` automaticamente.
 
-O formato esperado de cada rota está em [`CONTRATO-DA-API.md`](CONTRATO-DA-API.md). As rotas de e-mail
-(`/api/email/*`) já existem neste projeto e não dependem da API da equipe.
+O formato esperado de cada rota está em [`CONTRATO-DA-API.md`](CONTRATO-DA-API.md).
 
 ## 4. Fluxos
 
