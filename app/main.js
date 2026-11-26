@@ -8,7 +8,7 @@ const express = require("express");
 const compression = require("compression");
 const helmet = require("helmet");
 const cors = require("cors");
-const { paginas, email, usuario, evento } = require("./routers");
+const { paginas, usuario, evento } = require("./routers");
 
 const TEMPLATES = path.join(__dirname, "templates");
 function createApp() {
@@ -77,7 +77,6 @@ function createApp() {
   app.use(paginas);
 
   // API
-  app.use("/api/email", email); // código de verificação e e-mail de inscrição (SMTP do Google)
   app.use("/api/usuarios", usuario); // CRUD de usuários — equipe de back-end
   app.use("/api/eventos", evento); // CRUD de eventos — equipe de back-end
   app.use("/api", (req, res) => res.status(404).json({ erro: "Rota não encontrada." }));

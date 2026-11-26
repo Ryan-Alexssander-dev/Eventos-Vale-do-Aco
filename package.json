@@ -19,7 +19,7 @@
     "build": "prisma db push",
     "criar:admin": "node scripts/criar-administrador.js",
     "audit": "npm audit --omit=dev",
-    "test": "node --test tests/email.test.js tests/admin.test.js"
+    "test": "node --test tests/admin.test.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -31,8 +31,7 @@
     "express": "^5.3.0",
     "helmet": "^8.0.0",
     "multer": "^2.5.0",
-    "mysql2": "^3.15.3",
-    "nodemailer": "^10.6.1"
+    "mysql2": "^3.15.3"
   },
   "repository": {
     "type": "git",

@@ -2,7 +2,6 @@
 
 module.exports = {
   paginas: require("./paginasRoutes"),
-  email: require("./emailRoutes"),
   usuario: require("./usuarioRoutes"),
   evento: require("./eventoRoutes"),
 };

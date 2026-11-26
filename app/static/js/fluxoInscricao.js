@@ -1,8 +1,7 @@
 // Fluxo de inscrição.
-//   evento gratuito -> registra a inscrição e envia o e-mail na hora, sem passar pelo pagamento
-//   evento pago     -> segue para /pagamento; ao concluir, registra e envia o e-mail
+//   evento gratuito -> registra a inscrição e confirma na hora
+//   evento pago     -> segue para /pagamento; ao concluir, registra e confirma
 
-import { enviarEmailInscricao } from "./servicoEmail.js";
 import { registrarInscricao } from "./servicoEventos.js";
 import { irParaLogin, obterUsuario } from "./sessao.js";
 
@@ -19,12 +18,8 @@ export async function iniciarInscricao(evento) {
   await concluirInscricao(evento, usuario);
 }
 
-// Registra a inscrição, confirma o envio do e-mail e só então abre a tela de confirmação.
+// Registra a inscrição e abre a tela de confirmação.
 export async function concluirInscricao(evento, usuario) {
   await registrarInscricao(evento.id, usuario.id);
-  const resultado = await enviarEmailInscricao({ email: usuario.email, nome: usuario.nome, evento });
-  if (!resultado?.enviado) {
-    throw new Error("Sua inscrição foi registrada, mas o e-mail de confirmação não foi enviado. Tente novamente.");
-  }
-  window.location.href = `/inscricao-confirmada?evento=${encodeURIComponent(evento.id)}&email=1`;
+  window.location.href = `/inscricao-confirmada?evento=${encodeURIComponent(evento.id)}`;
 }

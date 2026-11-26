@@ -12,8 +12,6 @@ export const configuracao = {
     eventos: "/api/eventos",
     eventosSalvos: "/api/usuarios/:idUsuario/eventos-salvos",
     inscricoes: "/api/eventos/:idEvento/inscricoes",
-    // Rotas de e-mail deste projeto (app/routers/emailRoutes.js) — não dependem da API da equipe.
-    email: "/api/email",
   },
 
   // AJUSTAR: método HTTP usado para atualizar registros ("PATCH" ou "PUT").
@@ -41,7 +39,6 @@ export const configuracao = {
   chaves: {
     usuario: "vdaUsuario",
     token: "vdaToken",
-    verificacaoPendente: "vdaVerificacaoPendente",
     cacheEventos: "vdaCacheEventos",
   },
 

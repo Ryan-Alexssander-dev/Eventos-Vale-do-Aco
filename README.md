@@ -1,17 +1,18 @@
 # Eventos Vale do Aço
 
 Central de eventos de **Coronel Fabriciano, Ipatinga e Timóteo**. Administradores publicam os eventos;
-participantes se cadastram (com e-mail verificado por código), **salvam** eventos na agenda e **se inscrevem**
+participantes se cadastram, **salvam** eventos na agenda e **se inscrevem**
 — eventos gratuitos na hora, eventos pagos por uma tela de pagamento. O cadastro de empresas aparece na interface,
 mas está desativado na primeira entrega.
 
 > Projeto Integrador Senac. O front-end usa a API do projeto para contas e eventos; capas são armazenadas no Supabase
-> e os dados principais no MySQL. As rotas de e-mail usam SMTP.
+> e os dados principais no MySQL. O sistema não envia e-mails nem verifica a posse dos endereços cadastrados.
+> A recuperação automática de senha também está desativada.
 
 ## Tecnologias
 
 - **Front-end:** HTML5, CSS3, JavaScript (módulos ES), [Bootstrap 5](https://getbootstrap.com/) e Bootstrap Icons
-- **Back-end:** Node.js + [Express](https://expressjs.com/), e-mails com [Nodemailer](https://nodemailer.com/)
+- **Back-end:** Node.js + [Express](https://expressjs.com/)
 - **Banco de dados:** MySQL (`VDA-Eventos.sql`)
 
 ## Como rodar
@@ -44,9 +45,8 @@ EventosVDA/
 │   ├── main.js             # servidor Express (segurança, estáticos, rotas)
 │   ├── config.js           # lê o .env (único arquivo que faz isso)
 │   ├── database.js         # pool de conexões MySQL
-│   ├── routers/            # páginas, e-mail (pronto) e CRUD de usuários/eventos (equipe de back-end)
-│   ├── services/           # e-mail, códigos de verificação e armazenamento de capas
-│   ├── schemas/            # validação de e-mail
+│   ├── routers/            # páginas e CRUD de usuários/eventos
+│   ├── services/           # tokens de acesso e armazenamento de capas
 │   ├── middlewares/        # limite de requisições
 │   ├── templates/          # telas HTML (Bootstrap)
 │   └── static/             # css/, js/ (módulos) e img/ (inclui os avatares de animais)
@@ -66,8 +66,8 @@ EventosVDA/
 | `/cadastro` | `cadastro.html` | Visitante — escolha do tipo de conta (empresa: em breve) |
 | `/cadastro/usuario` | `cadastrarUsuario.html` | Visitante |
 | `/cadastro/organizador` | `cadastrarOrganizador.html` | Visitante — **desativado** |
-| `/verificar-email` | `verificarEmail.html` | Código de 6 dígitos enviado por e-mail |
-| `/recuperar-senha` | `recuperarSenha.html` | Visitante |
+| `/verificar-email` | redireciona para `/login` | Rota antiga; verificação desativada |
+| `/recuperar-senha` | `recuperarSenha.html` | Instruções; recuperação automática desativada |
 | `/home` | `home.html` | Logado |
 | `/eventos-salvos` | `eventosSalvos.html` | Participante |
 | `/perfil`, `/configuracoes` | `perfil.html`, `configuracoes.html` | Logado |

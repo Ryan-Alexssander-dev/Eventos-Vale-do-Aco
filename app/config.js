@@ -35,15 +35,6 @@ const config = {
     serviceRoleKey: getSetting("SUPABASE_SERVICE_ROLE_KEY"),
     bucket: getSetting("SUPABASE_BUCKET_EVENTOS", "event-covers"),
   },
-  // SMTP do Google (Gmail). A senha deve ser uma "senha de app" (exige verificação em duas etapas na conta).
-  smtp: {
-    host: getSetting("SMTP_HOST", "smtp.gmail.com"),
-    port: Number(getSetting("SMTP_PORT", "465")),
-    secure: getSetting("SMTP_SECURE", "true") === "true", // true = porta 465 (TLS direto)
-    username: getSetting("SMTP_USERNAME"),
-    password: getSetting("SMTP_PASSWORD"),
-    from: getSetting("SMTP_FROM"), // ex.: Eventos Vale do Aço <seuemail@gmail.com>
-  },
 };
 
 const PLACEHOLDERS = ["troque", "gere-uma", "seu_usuario", "change-me", "changeme"];
@@ -92,11 +83,6 @@ function assertProductionConfig() {
   }
   if (looksLikePlaceholder(config.supabase.bucket)) {
     problems.push("SUPABASE_BUCKET_EVENTOS ausente ou de exemplo");
-  }
-  for (const key of ["username", "password"]) {
-    if (looksLikePlaceholder(config.smtp[key])) {
-      problems.push(`SMTP_${key.toUpperCase()} ausente ou de exemplo`);
-    }
   }
   if (config.corsOrigins.includes("*")) {
     problems.push("CORS_ORIGIN=* não é permitido");

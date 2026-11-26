@@ -1,10 +1,8 @@
-// Cadastro de participante: valida, cria a conta e envia o código de verificação por e-mail.
+// Cadastro de participante: valida e cria a conta.
 
 import { avatarAleatorio, montarSeletorAvatares, obterAvatarSelecionado, urlAvatar } from "../avatares.js";
 import { definirCarregando, esconderAlerta, iniciarPagina, mostrarAlerta } from "../interface.js";
-import { enviarCodigoVerificacao } from "../servicoEmail.js";
 import { criarUsuario } from "../servicoUsuarios.js";
-import { salvarVerificacaoPendente } from "../sessao.js";
 import {
   ativarValidacaoAoVivo, validarAceite, validarCampos, validarConfirmacao,
   validarEmail, validarNome, validarSenhaNova,
@@ -51,18 +49,12 @@ function iniciar() {
       senha: formulario.campoSenha.value,
       avatar: obterAvatarSelecionado(seletor) || inicial,
       tipo: "usuario",
-      emailVerificado: false,
     };
 
     definirCarregando(botao, true, "Criando conta...");
     try {
-      const usuario = await criarUsuario(dados);
-      const pendente = { email: dados.email, finalidade: "cadastro", idUsuario: usuario?.id, enviadoEm: Date.now() };
-      await enviarCodigoVerificacao({ email: dados.email, nome: dados.nome, finalidade: "cadastro" }).catch(() => {
-        pendente.erroEnvio = true;
-      });
-      salvarVerificacaoPendente(pendente);
-      window.location.href = "/verificar-email";
+      await criarUsuario(dados);
+      window.location.href = "/login?cadastro=1";
     } catch (erro) {
       mostrarAlerta(erro.message, "erro");
       definirCarregando(botao, false);

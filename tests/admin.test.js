@@ -5,9 +5,9 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 
 const { assinarToken, verificarToken } = require("../app/services/tokensAcesso");
-const codigosVerificacao = require("../app/services/codigosVerificacao");
 const { criarUsuarioRoutes } = require("../app/routers/usuarioRoutes");
 const { criarEventoRoutes } = require("../app/routers/eventoRoutes");
+const { createApp } = require("../app/main");
 
 async function iniciarServidor(t, app) {
   const servidor = app.listen(0, "127.0.0.1");
@@ -27,7 +27,7 @@ test("token de acesso rejeita adulteração e expiração", () => {
   assert.equal(verificarToken(token, segredo, 20_000_000), null);
 });
 
-test("login devolve token e nunca expõe o hash da senha", async (t) => {
+test("login permite contas sem e-mail verificado e nunca expõe o hash da senha", async (t) => {
   const segredo = "chave-de-teste-com-tamanho-suficiente";
   const hash = await bcrypt.hash("SenhaSegura123", 4);
   const query = async (sql) => {
@@ -39,7 +39,7 @@ test("login devolve token e nunca expõe o hash da senha", async (t) => {
       senha: hash,
       tipo: "administrador",
       avatar: null,
-      emailVerificado: 1,
+      emailVerificado: 0,
     }];
   };
   const app = express();
@@ -59,19 +59,24 @@ test("login devolve token e nunca expõe o hash da senha", async (t) => {
   assert.deepEqual(verificarToken(dados.token, segredo).id, "8");
 });
 
-test("confirma e-mail com token de cadastro sem exigir login", async (t) => {
-  const email = `confirmacao-${Date.now()}@exemplo.com`;
-  const { codigo } = codigosVerificacao.emitirCodigo(email, "cadastro");
-  const { tokenVerificacao } = codigosVerificacao.conferirCodigo(email, "cadastro", codigo);
-  const atualizacoes = [];
+test("cadastro cria uma conta sem exigir verificação por e-mail", async (t) => {
+  let conta;
   const query = async (sql, params = []) => {
-    if (sql.includes("FROM users WHERE email = ?")) {
-      assert.equal(params[0], email);
-      return [{ id: 8, emailVerificado: 0 }];
+    if (sql.startsWith("INSERT INTO users")) {
+      conta = {
+        id: 17,
+        nome: params[0],
+        email: params[1],
+        tipo: "usuario",
+        avatar: params[3],
+        senha: params[2],
+        emailVerificado: 0,
+      };
+      return { insertId: conta.id };
     }
-    if (sql.includes("UPDATE users SET email_verificado = 1 WHERE id_user = ?")) {
-      atualizacoes.push(params[0]);
-      return { affectedRows: 1 };
+    if (sql.includes("FROM users WHERE id_user = ?")) {
+      assert.equal(params[0], conta.id);
+      return [conta];
     }
     throw new Error(`Consulta inesperada: ${sql}`);
   };
@@ -80,30 +85,72 @@ test("confirma e-mail com token de cadastro sem exigir login", async (t) => {
   app.use("/api/usuarios", criarUsuarioRoutes({ query }));
   const base = await iniciarServidor(t, app);
 
-  const invalida = await fetch(`${base}/api/usuarios/confirmar-email`, {
+  const resposta = await fetch(`${base}/api/usuarios`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ tokenVerificacao: "token-invalido" }),
+    body: JSON.stringify({
+      nome: "Participante",
+      email: "participante@exemplo.com",
+      senha: "SenhaSegura123",
+      avatar: "raposa",
+    }),
   });
-  assert.equal(invalida.status, 400);
+  const dados = await resposta.json();
+  assert.equal(resposta.status, 201);
+  assert.equal(dados.usuario.id, "17");
+  assert.equal(dados.usuario.emailVerificado, false);
+  assert.equal(await bcrypt.compare("SenhaSegura123", conta.senha), true);
+});
 
-  const { codigo: codigoRecuperacao } = codigosVerificacao.emitirCodigo(email, "recuperacao");
-  const { tokenVerificacao: tokenRecuperacao } = codigosVerificacao.conferirCodigo(email, "recuperacao", codigoRecuperacao);
-  const tokenDeOutraFinalidade = await fetch(`${base}/api/usuarios/confirmar-email`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ tokenVerificacao: tokenRecuperacao }),
-  });
-  assert.equal(tokenDeOutraFinalidade.status, 400);
+test("rotas de e-mail são removidas e links antigos de verificação voltam ao login", async (t) => {
+  const base = await iniciarServidor(t, createApp());
+  const antiga = await fetch(`${base}/verificar-email`, { redirect: "manual" });
+  assert.equal(antiga.status, 302);
+  assert.equal(antiga.headers.get("location"), "/login?verificacaoDesativada=1");
 
-  const confirmada = await fetch(`${base}/api/usuarios/confirmar-email`, {
+  const envio = await fetch(`${base}/api/email/codigo`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ tokenVerificacao }),
+    body: JSON.stringify({ email: "a@b.com", finalidade: "cadastro" }),
   });
-  assert.equal(confirmada.status, 200);
-  assert.deepEqual(await confirmada.json(), { ok: true });
-  assert.deepEqual(atualizacoes, [8]);
+  assert.equal(envio.status, 404);
+});
+
+test("recuperação sem e-mail exige autenticação e a senha atual", async (t) => {
+  const segredo = "chave-de-teste-com-tamanho-suficiente";
+  const hash = await bcrypt.hash("SenhaSegura123", 4);
+  const usuario = {
+    id: "8",
+    nome: "Ana",
+    email: "ana@exemplo.com",
+    senha: hash,
+    tipo: "usuario",
+    avatar: null,
+    emailVerificado: 0,
+    notificacoes: null,
+    cidadesInteresse: null,
+  };
+  const query = async (sql) => {
+    if (sql.includes("FROM users WHERE id_user = ?")) {
+      return [usuario];
+    }
+    throw new Error(`Consulta inesperada: ${sql}`);
+  };
+  const app = express();
+  app.use(express.json());
+  app.use("/api/usuarios", criarUsuarioRoutes({ query, segredo }));
+  const base = await iniciarServidor(t, app);
+
+  const resposta = await fetch(`${base}/api/usuarios/8`, {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${assinarToken({ id: "8" }, segredo)}`,
+    },
+    body: JSON.stringify({ novaSenha: "OutraSenha456" }),
+  });
+  assert.equal(resposta.status, 403);
+  assert.match((await resposta.json()).mensagem, /senha atual/);
 });
 
 test("somente administrador autenticado pode publicar evento", async (t) => {

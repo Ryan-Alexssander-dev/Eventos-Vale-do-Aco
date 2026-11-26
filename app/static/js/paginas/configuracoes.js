@@ -1,4 +1,4 @@
-// Configurações: notificações por e-mail, cidades de interesse, cookies e download dos dados.
+// Configurações: cidades de interesse, cookies e download dos dados.
 
 import { definirCarregando, iniciarPagina, mostrarAlerta } from "../interface.js";
 import { listarEventosSalvos, atualizarUsuario, buscarUsuario } from "../servicoUsuarios.js";
@@ -17,10 +17,6 @@ async function iniciar(usuarioSessao) {
   }
 
   const formulario = document.getElementById("formularioConfiguracoes");
-  const notificacoes = { lembrete: true, novosEventos: false, avisos: true, ...(usuario.notificacoes ?? {}) };
-  formulario.notifLembrete.checked = notificacoes.lembrete;
-  formulario.notifNovos.checked = notificacoes.novosEventos;
-  formulario.notifAvisos.checked = notificacoes.avisos;
   const cidades = usuario.cidadesInteresse ?? [];
   formulario.querySelectorAll("input[name=cidadesInteresse]").forEach((caixa) => (caixa.checked = cidades.includes(caixa.value)));
 
@@ -30,7 +26,6 @@ async function iniciar(usuarioSessao) {
     definirCarregando(botao, true, "Salvando...");
     try {
       await atualizarUsuario(usuario.id, {
-        notificacoes: { lembrete: formulario.notifLembrete.checked, novosEventos: formulario.notifNovos.checked, avisos: formulario.notifAvisos.checked },
         cidadesInteresse: [...formulario.querySelectorAll("input[name=cidadesInteresse]:checked")].map((caixa) => caixa.value),
       });
       mostrarAlerta("Configurações salvas.", "sucesso");

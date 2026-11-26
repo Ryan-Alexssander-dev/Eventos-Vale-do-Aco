@@ -4,7 +4,6 @@ const database = require("../database");
 const { assinarToken, obterSegredo } = require("../services/tokensAcesso");
 const { criarAutenticacao } = require("../middlewares/autenticacao");
 const { limitarRequisicoes } = require("../middlewares/limitarRequisicoes");
-const { verificarToken: verificarTokenDeCodigo } = require("../services/codigosVerificacao");
 
 const HASH_DUMMY = bcrypt.hash("senha-inexistente-para-equalizar-login", 12);
 const limitarLogin = limitarRequisicoes({ janelaMs: 15 * 60 * 1000, maximo: 10 });
@@ -62,30 +61,6 @@ function criarUsuarioRoutes({ query = database.query, segredo = obterSegredo() }
 
       const usuarioPublico = normalizarUsuarioPublico(usuario);
       return res.json({ usuario: usuarioPublico, token: assinarToken(usuarioPublico, segredo) });
-    } catch (error) {
-      return next(error);
-    }
-  });
-
-  router.post("/confirmar-email", async (req, res, next) => {
-    const dadosToken = verificarTokenDeCodigo(req.body?.tokenVerificacao);
-    if (!dadosToken || dadosToken.finalidade !== "cadastro") {
-      return res.status(400).json({ mensagem: "Token de confirmação inválido." });
-    }
-
-    try {
-      const usuarios = await query(
-        "SELECT id_user AS id, email_verificado AS emailVerificado FROM users WHERE email = ?",
-        [dadosToken.email],
-      );
-      const usuario = usuarios[0];
-      if (!usuario) {
-        return res.status(404).json({ mensagem: "Usuário não encontrado." });
-      }
-      if (Number(usuario.emailVerificado) !== 1) {
-        await query("UPDATE users SET email_verificado = 1 WHERE id_user = ?", [usuario.id]);
-      }
-      return res.json({ ok: true });
     } catch (error) {
       return next(error);
     }
@@ -184,6 +159,12 @@ function criarUsuarioRoutes({ query = database.query, segredo = obterSegredo() }
       const atual = linhas[0];
       if (!atual) return res.status(404).json({ mensagem: "Usuário não encontrado." });
 
+      if (req.body?.novaSenha !== undefined && req.body?.senhaAtual === undefined) {
+        return res.status(403).json({
+          mensagem: "A recuperação por e-mail está desativada. Para alterar a senha, informe a senha atual.",
+        });
+      }
+
       if (req.body?.senhaAtual !== undefined || req.body?.novaSenha !== undefined) {
         if (!req.body.senhaAtual || !req.body.novaSenha ||
             !(await bcrypt.compare(req.body.senhaAtual, atual.senha))) {
@@ -193,25 +174,6 @@ function criarUsuarioRoutes({ query = database.query, segredo = obterSegredo() }
           return res.status(400).json({ mensagem: "A nova senha deve ter letras, números e pelo menos 8 caracteres." });
         }
         await query("UPDATE users SET senha = ? WHERE id_user = ?", [await bcrypt.hash(req.body.novaSenha, 12), req.params.id]);
-      }
-
-      if (req.body?.novaSenha !== undefined && req.body?.senhaAtual === undefined) {
-        const dadosToken = verificarTokenDeCodigo(req.body.tokenVerificacao);
-        if (!dadosToken || dadosToken.email !== atual.email || dadosToken.finalidade !== "recuperacao") {
-          return res.status(400).json({ mensagem: "Token de recuperação inválido." });
-        }
-        if (!validarSenha(req.body.novaSenha)) {
-          return res.status(400).json({ mensagem: "A nova senha deve ter letras, números e pelo menos 8 caracteres." });
-        }
-        await query("UPDATE users SET senha = ? WHERE id_user = ?", [await bcrypt.hash(req.body.novaSenha, 12), req.params.id]);
-      }
-
-      if (req.body?.emailVerificado === true) {
-        const dadosToken = verificarTokenDeCodigo(req.body.tokenVerificacao);
-        if (!dadosToken || dadosToken.email !== atual.email || dadosToken.finalidade !== "cadastro") {
-          return res.status(400).json({ mensagem: "Token de confirmação inválido." });
-        }
-        await query("UPDATE users SET email_verificado = 1 WHERE id_user = ?", [req.params.id]);
       }
 
       if (req.body?.notificacoes !== undefined) {

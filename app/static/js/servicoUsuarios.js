@@ -1,7 +1,7 @@
 // CRUD de usuários (e tudo que pertence a um usuário). Os caminhos vêm de configuracao.js.
 
 import { configuracao, montarCaminho } from "./configuracao.js";
-import { extrairItem, extrairLista, requisitar, ErroApi } from "./api.js";
+import { extrairItem, extrairLista, requisitar } from "./api.js";
 import { normalizarEvento, normalizarUsuario } from "./normalizadores.js";
 
 const { caminhos, metodoAtualizacao } = configuracao;
@@ -23,19 +23,6 @@ export async function buscarUsuario(id) {
   return normalizarUsuario(extrairItem(resposta, ["usuario"]));
 }
 
-export async function buscarUsuarioPorEmail(email) {
-  try {
-    const resposta = await requisitar(caminhos.usuarios, { parametros: { email } });
-    const lista = extrairLista(resposta, ["usuarios"]);
-    return normalizarUsuario(lista[0] ?? (Array.isArray(resposta) ? null : extrairItem(resposta, ["usuario"])));
-  } catch (erro) {
-    if (erro instanceof ErroApi && erro.status === 404) {
-      return null;
-    }
-    throw erro;
-  }
-}
-
 export async function atualizarUsuario(id, parcial) {
   const resposta = await requisitar(`${caminhos.usuarios}/${encodeURIComponent(id)}`, { metodo: metodoAtualizacao, corpo: parcial });
   return normalizarUsuario(extrairItem(resposta, ["usuario"])) ?? null;
@@ -44,19 +31,6 @@ export async function atualizarUsuario(id, parcial) {
 // Troca de senha de quem está logado (exige a senha atual).
 export async function atualizarSenha(id, { senhaAtual, novaSenha }) {
   await requisitar(`${caminhos.usuarios}/${encodeURIComponent(id)}`, { metodo: metodoAtualizacao, corpo: { senhaAtual, novaSenha } });
-}
-
-// Recuperação de senha: vale com o token devolvido pela verificação do código de e-mail.
-export async function redefinirSenha({ email, novaSenha, tokenVerificacao }) {
-  const usuario = await buscarUsuarioPorEmail(email);
-  if (!usuario) {
-    throw new ErroApi("Não encontramos uma conta com esse e-mail.", 404);
-  }
-  await requisitar(`${caminhos.usuarios}/${encodeURIComponent(usuario.id)}`, { metodo: metodoAtualizacao, corpo: { novaSenha, tokenVerificacao } });
-}
-
-export async function confirmarEmail(email, tokenVerificacao) {
-  await requisitar(`${caminhos.usuarios}/confirmar-email`, { metodo: "POST", corpo: { tokenVerificacao } });
 }
 
 export async function excluirUsuario(id, senha) {

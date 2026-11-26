@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Notificações, cidades de interesse e privacidade.">
+    <meta name="description" content="Cidades de interesse e privacidade.">
     <title>Configurações | Eventos Vale do Aço</title>
 
     <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
@@ -78,7 +78,7 @@
 
         <div class="cabecalho-pagina">
             <h1 class="h3 fw-bold mb-1">Configurações</h1>
-            <p class="text-secondary mb-0">Escolha como e quando você quer ser avisado.</p>
+            <p class="text-secondary mb-0">Gerencie suas preferências e dados pessoais.</p>
         </div>
 
         <div id="alertaFeedback" class="alerta-personalizado d-none align-items-center gap-2 mb-3 py-2 px-3" role="alert">
@@ -90,29 +90,9 @@
             <div class="col-lg-8">
                 <form id="formularioConfiguracoes" method="post" action="/configuracoes" novalidate>
 
-                    <section class="painel p-4 mb-4" aria-labelledby="tituloNotificacoes">
-                        <h2 id="tituloNotificacoes" class="painel-titulo">Notificações por e-mail</h2>
-                        <p class="painel-subtitulo">Os avisos são enviados para o e-mail da sua conta.</p>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" role="switch" id="notifLembrete" name="lembrete" aria-describedby="notifLembreteAjuda">
-                            <label class="form-check-label fw-semibold text-dark" for="notifLembrete">Lembrete dos eventos salvos</label>
-                            <div id="notifLembreteAjuda" class="form-text mt-0">Receba um e-mail antes de um evento que você salvou.</div>
-                        </div>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" role="switch" id="notifNovos" name="novosEventos" aria-describedby="notifNovosAjuda">
-                            <label class="form-check-label fw-semibold text-dark" for="notifNovos">Novos eventos nas minhas cidades</label>
-                            <div id="notifNovosAjuda" class="form-text mt-0">Avisamos quando novos eventos forem publicados nas cidades de interesse.</div>
-                        </div>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" role="switch" id="notifAvisos" name="avisos" aria-describedby="notifAvisosAjuda">
-                            <label class="form-check-label fw-semibold text-dark" for="notifAvisos">Avisos importantes da plataforma</label>
-                            <div id="notifAvisosAjuda" class="form-text mt-0">Mudanças em eventos salvos e comunicados sobre a sua conta.</div>
-                        </div>
-                    </section>
-
                     <section class="painel p-4 mb-4" aria-labelledby="tituloCidades">
                         <h2 id="tituloCidades" class="painel-titulo">Cidades de interesse</h2>
-                        <p class="painel-subtitulo">Usadas nos avisos de novos eventos.</p>
+                        <p class="painel-subtitulo">Cidades que você acompanha.</p>
                         <div class="d-flex flex-column gap-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="interesse0" name="cidadesInteresse" value="Coronel Fabriciano">

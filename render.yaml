@@ -37,15 +37,3 @@ services:
         sync: false
       - key: SUPABASE_BUCKET_EVENTOS
         value: event-covers
-      - key: SMTP_HOST
-        value: smtp.gmail.com
-      - key: SMTP_PORT
-        value: "465"
-      - key: SMTP_SECURE
-        value: "true"
-      - key: SMTP_USERNAME
-        sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_FROM
-        sync: false

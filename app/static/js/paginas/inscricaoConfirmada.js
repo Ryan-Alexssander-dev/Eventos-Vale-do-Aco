@@ -1,7 +1,7 @@
 // Confirmação da inscrição.
 
 import { formatarDataHora, formatarPreco } from "../formatacao.js";
-import { iniciarPagina, mostrarAlerta } from "../interface.js";
+import { iniciarPagina } from "../interface.js";
 import { buscarEvento } from "../servicoEventos.js";
 
 const { continuar } = iniciarPagina({ exigir: "logado" });
@@ -11,7 +11,6 @@ if (continuar) {
 
 async function iniciar() {
   const consulta = new URLSearchParams(window.location.search);
-  const emailEnviado = consulta.get("email") !== "0";
   const $ = (id) => document.getElementById(id);
 
   try {
@@ -26,8 +25,4 @@ async function iniciar() {
     /* sem os detalhes, mostra só a mensagem */
   }
 
-  $("textoEmailConfirmacao").classList.toggle("d-none", !emailEnviado);
-  if (!emailEnviado) {
-    mostrarAlerta("Sua inscrição foi registrada, mas não conseguimos enviar o e-mail de confirmação agora.", "info");
-  }
 }

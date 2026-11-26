@@ -16,7 +16,6 @@ const paginas = {
   "/cadastro": "cadastro.html",
   "/cadastro/usuario": "cadastrarUsuario.html",
   "/cadastro/organizador": "cadastrarOrganizador.html",
-  "/verificar-email": "verificarEmail.html",
   "/recuperar-senha": "recuperarSenha.html",
   "/home": "home.html",
   "/eventos-salvos": "eventosSalvos.html",
@@ -30,6 +29,10 @@ const paginas = {
   "/privacidade": "privacidade.html",
   "/cookies": "cookies.html",
 };
+
+router.get("/verificar-email", (_req, res) => {
+  res.redirect("/login?verificacaoDesativada=1");
+});
 
 for (const [rota, arquivo] of Object.entries(paginas)) {
   router.get(rota, (req, res) => {

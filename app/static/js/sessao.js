@@ -92,20 +92,3 @@ export function sair() {
   limparSessao();
   window.location.href = "/";
 }
-
-// Verificação de e-mail em andamento (nunca guarda senha).
-export function obterVerificacaoPendente() {
-  try {
-    return JSON.parse(sessionStorage.getItem(chaves.verificacaoPendente) ?? "null");
-  } catch {
-    return null;
-  }
-}
-
-export function salvarVerificacaoPendente(dados) {
-  sessionStorage.setItem(chaves.verificacaoPendente, JSON.stringify(dados));
-}
-
-export function limparVerificacaoPendente() {
-  sessionStorage.removeItem(chaves.verificacaoPendente);
-}

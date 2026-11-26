@@ -7,14 +7,13 @@ Este guia explica sua organização e os pontos de configuração da API.
 
 ```bash
 npm install
-cp .env.example .env     # configure MySQL e SMTP para os fluxos correspondentes
+cp .env.example .env     # configure MySQL
 npm run migrate-db
 npm run dev              # http://127.0.0.1:3000
-npm test                 # testes das rotas de e-mail
+npm test                 # testes automatizados
 ```
 
-Sem SMTP configurado, em desenvolvimento, o **código de verificação aparece no console do servidor**
-(`npm run dev`) em vez de ser enviado por e-mail.
+O sistema não envia e-mails. Cadastros não verificam a posse do endereço informado.
 
 ## 2. Organização (`app/static/js/`)
 
@@ -26,7 +25,6 @@ Nomes em pt-BR e camelCase. Cada arquivo faz uma coisa:
 | `api.js` | `requisitar(caminho, opcoes)`: fetch genérico (recebe o caminho como argumento) |
 | `servicoUsuarios.js` | CRUD de usuários, login, senha, eventos salvos |
 | `servicoEventos.js` | CRUD de eventos e inscrições |
-| `servicoEmail.js` | Código de verificação e e-mail de inscrição (rotas deste projeto) |
 | `normalizadores.js` | Converte o formato da API para o do front (aceita `nomeEvento`/`titulo` etc.) |
 | `sessao.js` | Usuário logado, redirecionamentos, `proximo` seguro |
 | `validacoes.js`, `mascaras.js` | Regras de validação e máscaras (CNPJ) |
@@ -51,12 +49,11 @@ O formato esperado de cada rota está em [`CONTRATO-DA-API.md`](CONTRATO-DA-API.
 
 ## 4. Fluxos
 
-- **Cadastro:** valida → cria usuário (`emailVerificado: false`) → envia código → `/verificar-email` →
-  código correto → marca o e-mail como verificado → `/login`. Quem tenta entrar sem verificar volta para a verificação.
-- **Recuperar senha:** e-mail → código → nova senha (a API recebe o `tokenVerificacao`).
+- **Cadastro:** valida → cria usuário → `/login`. A verificação de e-mail não é exigida.
+- **Senha:** usuário autenticado pode alterar a senha no perfil informando a senha atual. A recuperação automática por e-mail está desativada; contas sem acesso devem procurar a equipe do projeto.
 - **Login:** administrador → `/admin`; participante → `/home` (ou a tela que ele tentou abrir, via `?proximo=`).
-- **Inscrição:** botão "Inscrever-se" na janela de detalhes. Evento **gratuito**: registra e envia o e-mail na hora,
-  sem passar pelo pagamento. Evento **pago**: `/pagamento` → ao pagar, registra e envia o e-mail → `/inscricao-confirmada`.
+- **Inscrição:** botão "Inscrever-se" na janela de detalhes. Evento **gratuito**: registra a inscrição na hora,
+  sem passar pelo pagamento. Evento **pago**: `/pagamento` → ao pagar, registra a inscrição → `/inscricao-confirmada`.
 - **Pagamento:** os campos do cartão não têm `name`, não são lidos, validados, guardados nem enviados.
 - **Administrador:** `/admin` lista os eventos e tem "Publicar evento" (também editar e excluir). Quem não é administrador
   volta para `/home` ao abrir essas telas.

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Crie uma nova senha para a sua conta.">
+    <meta name="description" content="Saiba como alterar a senha da sua conta.">
     <title>Recuperar senha | Eventos Vale do Aço</title>
 
     <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
@@ -34,70 +34,13 @@
                         <span>Eventos <span class="marca-destaque">Vale do Aço</span></span>
                     </a>
                 </div>
-                <h1 class="h4 fw-bold text-dark mb-1">Recuperar senha</h1>
-                <p class="text-secondary small mb-0">Confirme seu e-mail para criar uma nova senha</p>
+                <h1 class="h4 fw-bold text-dark mb-1">Recuperação de senha</h1>
+                <p class="text-secondary small mb-0">A recuperação automática por e-mail está desativada.</p>
             </div>
 
-            <div id="alertaFeedback" class="alerta-personalizado d-none align-items-center gap-2 mb-3 py-2 px-3" role="alert">
-                <i id="iconeFeedback" class="bi bi-info-circle-fill text-primary fs-5" aria-hidden="true"></i>
-                <div id="mensagemFeedback" class="fw-medium"></div>
-            </div>
-
-            <div id="etapaEmail">
-                <form id="formularioRecuperacao" method="post" action="/recuperar-senha" novalidate>
-                    <div class="mb-3">
-                        <label for="campoEmail" class="form-label">E-mail da conta</label>
-                        <input
-                            type="email"
-                            class="form-control"
-                            id="campoEmail"
-                            name="email"
-                            placeholder="nome@email.com"
-                            autocomplete="email"
-                        >
-                        <div class="invalid-feedback">Por favor, insira um endereço de e-mail válido.</div>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn botao-escuro py-2" data-botao-enviar>
-                            <span data-botao-texto>Enviar código</span>
-                            <span class="spinner-border spinner-border-sm ms-2 d-none" data-botao-indicador role="status" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="etapaNovaSenha" class="d-none">
-                <form id="formularioNovaSenha" method="post" action="/recuperar-senha" novalidate>
-                    <div class="mb-3">
-                        <label for="campoNovaSenha" class="form-label">Nova senha</label>
-                        <div class="input-group has-validation">
-                            <input type="password" class="form-control" id="campoNovaSenha" name="novaSenha" placeholder="Crie uma nova senha" autocomplete="new-password" aria-describedby="campoNovaSenhaAjuda">
-                            <button class="btn botao-alternar-senha" type="button" data-alternar-senha="campoNovaSenha" aria-label="Mostrar ou ocultar senha" title="Mostrar/ocultar senha">
-                                <i class="bi bi-eye" aria-hidden="true"></i>
-                            </button>
-                            <div class="invalid-feedback">A senha deve conter pelo menos 8 caracteres.</div>
-                        </div>
-                        <div id="campoNovaSenhaAjuda" class="form-text">Mínimo de 8 caracteres, com letras e números.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="campoConfirmarNovaSenha" class="form-label">Confirmar nova senha</label>
-                        <div class="input-group has-validation">
-                            <input type="password" class="form-control" id="campoConfirmarNovaSenha" name="confirmarNovaSenha" placeholder="Repita a nova senha" autocomplete="new-password">
-                            <button class="btn botao-alternar-senha" type="button" data-alternar-senha="campoConfirmarNovaSenha" aria-label="Mostrar ou ocultar senha" title="Mostrar/ocultar senha">
-                                <i class="bi bi-eye" aria-hidden="true"></i>
-                            </button>
-                            <div class="invalid-feedback">As senhas precisam ser iguais.</div>
-                        </div>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn botao-escuro py-2" data-botao-enviar>
-                            <span data-botao-texto>Salvar nova senha</span>
-                            <span class="spinner-border spinner-border-sm ms-2 d-none" data-botao-indicador role="status" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                </form>
+            <div class="alert alert-info" role="status">
+                Se você consegue entrar na conta, altere a senha em <strong>Meu perfil</strong>, informando sua senha atual.
+                Se não consegue entrar, entre em contato com a equipe responsável pelo projeto.
             </div>
 
             <p class="text-center text-secondary small mb-0 mt-3">
