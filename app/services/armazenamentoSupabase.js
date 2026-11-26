@@ -41,7 +41,7 @@ async function subirCapa(arquivo, tipo) {
     upsert: false,
   });
   if (error) {
-    const falha = new Error("Não foi possível enviar a imagem de capa ao armazenamento.");
+    const falha = new Error("Não foi possível enviar a imagem de capa ao armazenamento.", { cause: error });
     falha.status = 502;
     throw falha;
   }

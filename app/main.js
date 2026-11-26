@@ -90,6 +90,10 @@ function createApp() {
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     console.error(`[erro] ${req.method} ${req.path}: ${err.message}`); // não registre corpo da requisição (senhas)
+    if (typeof err.cause?.message === "string") {
+      const codigo = [err.cause.statusCode, err.cause.error].filter(Boolean).join(" ");
+      console.error(`[detalhe] ${req.method} ${req.path}: ${codigo ? `${codigo} ` : ""}${err.cause.message}`);
+    }
     const status = err.status ?? 500;
     res.status(status).json({ erro: config.isProduction ? "Erro interno do servidor." : err.message });
   });
