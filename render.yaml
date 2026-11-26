@@ -25,6 +25,8 @@ services:
         sync: false
       - key: MYSQL_PASSWORD
         sync: false
+      - key: DATABASE_URL
+        sync: false
       - key: MYSQL_CONNECTION_LIMIT
         value: "2"
       - key: MYSQL_SSL

@@ -14,6 +14,9 @@
     "start": "node app/main.js",
     "dev": "node --watch app/main.js",
     "migrate-db": "node scripts/migrar-banco.js",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "build": "prisma db push",
     "criar:admin": "node scripts/criar-administrador.js",
     "audit": "npm audit --omit=dev",
     "test": "node --test tests/email.test.js tests/admin.test.js"
